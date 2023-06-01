@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% macro input_field(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" name="{{ name }}" value="{{
+        value}}" size="{{ size }}">
+{%- endmacro %}
+
+{% block title %}Login{% endblock %}
+{% block head %}
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+<div>
+{% include 'nav.html' %}
+</div>
+<div class="w3-container">
+
+</div>
+<div class="w3-row w3-container w3-padding-large">
+
+  <div class="w3-col s4 w3-center">
+<p> </p>
+  </div>
+  <div class="w3-col s4 w3-dark-grey w3-center w3-padding-small">
+      {{ exception }}
+      <form action="http://localhost:5000/login" method="post" id="flogin" name="login" enctype="text/html; charset=UTF-8">
+           <input type="hidden" name="logform" value="login">
+    {% include 'form.html' %}
+    </form>
+  </div>
+  <div class="w3-col s4 w3-container w3-bottom">
+   <p> {{ data }}</p>
+  </div>
+</div>
+{% endblock %}
