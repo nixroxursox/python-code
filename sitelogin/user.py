@@ -16,12 +16,16 @@ class user():
         self.passwd = None
         self.pin_code = None
 
-    def checkLogin(userId, passwd, pin_code):
+    def checkLogin(dbDict):
         try:
             dbr = dataBase.Config("read")
-            dbc = dbr.readDb("luser")
-            lc = dbc.find({}, dbqueries.getUserCreds(userId))
-            if userId == lc.userId:
-                pwgood == pwhash.verify.str(lc.passwd, passwd)
-                pingood = pwhash.verify.str(pin_code, lc.pin_code)
-                if pwgood and pingood:
+            rcol = dbr["luser"]
+            lc = rcol.find_one({}, dbqueries.getUserCreds(dbDict[userId]))
+            if lc[userId] != None:
+                goodpw == pwhash.verify.str(lc[passwd], passwd)
+                pingood = pwhash.verify.str(lc[pinCode], fpin_code)
+                if goodpw == True:
+                    if pingood == True
+            return True
+        except pymongoerror as e:
+            return false

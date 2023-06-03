@@ -37,32 +37,30 @@ class dataBase():
         client = mc(host, port, username=dbUser, password=dbPass, authSource=authSource, authMechanism=mechanism)
         db = client[dbObj]
         return db
-    def readDb(col):
-        try:
-            client = dataBase.Config("read")
-            rcol = client[col]
-            return rcol
-        except PyMongoError as e:
-            print(e)
+    # def readDb(col):
+    #     try:
+    #         client = dataBase.Config("read")
+    #         rcol = client[col]
+    #         return rcol
+    #     except PyMongoError as e:
+    #         print(e)
 
-    def writeDb(col):
-        try:
-            client = dataBase.Config("write")
-            rcol = client[col]
-            return rcol
-        except PyMongoError as e:
-            print(e)
+    # def writeDb(col):
+    #     try:
+    #         client = dataBase.Config("write")
+    #         rcol = client[col]
+    #         return rcol
+    #     except PyMongoError as e:
+    #         print(e)
             
     def find(dbDict):
         try:
-            db, dbCol, fuserId, fpasswd, fpin_code, = dbDict
-            dbr = self.readDb()
-            db = self.readDb("locker","luser")
-            dbr = db["locker"]
+            dbCol, fuserId, fpasswd, fpin_code, = dbDict
+            dbr = self.Config("read")
             rcol = dbr["luser"]
             try:
-                # userId, password, pin_code = rcol.find_one({}, "_id": 0, "userId": 1, "passwd": 1, "pin_code": 1)
-                if chkUser[userId] == userId:
+                dbUserId, dbPasswd, dbPinCode = rcol.find_one({}, "_id": 0, "userId": 1, "passwd": 1, "pin_code": 1)
+                if dbDict[fuserId] == userId:
                     if pwhash.str(password, chkUser[password]) == True:
                         if pwhash.str(pin_code, chkUser[pin_code]) == True:
                             return userId

@@ -7,7 +7,7 @@ import jinja2
 from jinja2 import Environment, Template
 from jinja2.loaders import FileSystemLoader
 #from jinja2.loaders import DictLoader
-from flask_login import LoginManager, login_required, current_user
+from flask_login import LoginManager, login_required, current_user, session
 
 # env = Environment(loader=DictLoader({
 # 'a': '''[A[{% block body %}{% endblock %}]]''',
@@ -41,24 +41,19 @@ from flask_login import LoginManager, login_required, current_user
 env = Environment(loader=FileSystemLoader('templates'))
 
 # #template = Template(directory="templates")
-async def do_the_login():    
-    response = await make_response("Hello")
-    response.set_cookie("cooookie", "1")
-    return response
 
-
-async def show_the_login():
-    request.method
-    request.url
-    request.headers["X-Bob"]
-    request.args.get("a")  # Query string e.g. example.com/hello?a=2
-    await request.get_data()  # Full raw body
-    (await request.form)["name"]
-    (await request.get_json())["key"]
-    request.cookies.get("name")
+# async def show_the_login():
+#     request.method
+#     request.url
+#     request.headers["X-Bob"]
+#     request.args.get("a")  # Query string e.g. example.com/hello?a=2
+#     await request.get_data()  # Full raw body
+#     (await request.form)["name"]
+#     (await request.get_json())["key"]
+#     request.cookies.get("name")
 
     
-    return await render_template('auth/login.html')
+#     return await render_template('auth/login.html')
 # tmpl = env.get_template('index.html')
 # tmp2 = template.render_async("index.html", context="hello world")
 # # print tmpl.render(seq=[3, 2, 4, 5, 3, 2, 0, 2, 1])
@@ -71,17 +66,24 @@ async def show_the_login():
 app = Quart(__name__)
 
 
-@app.get("/login")
-async def login_get():
-    return show_the_login()
 
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 @app.post("/login")
-async def login_post():
-    return do_the_login()
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if valid_login(request.form['username'],
+                       request.form['password']):
+            return log_the_user_in(request.form['username'])
+        else:
+            error = 'Invalid username/password'
+    # the code below is executed if the request method
+    # was GET or the credentials were invalid
+    return render_template('auth/login.html', error=error)
 
 
 @app.route("/") 
