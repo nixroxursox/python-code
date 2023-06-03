@@ -17,8 +17,7 @@ dbwUri = config('dbwUri')
 
 
 class dataBase():
-
-    def __init__(self, db, col):
+    def __init__(self, col):
         self.db = "locker"
         self.col = col
     
@@ -55,13 +54,13 @@ class dataBase():
             
     def find(dbDict):
         try:
-            dbCol, fuserId, fpasswd, fpin_code, = dbDict
-            dbr = self.Config("read")
+            fuserId, fpasswd, fpinCode, = dbDict
+            dbr = dataBase.Config("read")
             rcol = dbr["luser"]
             try:
-                dbUserId, dbPasswd, dbPinCode = rcol.find_one({}, "_id": 0, "userId": 1, "passwd": 1, "pin_code": 1)
-                if dbDict[fuserId] == userId:
-                    if pwhash.str(password, chkUser[password]) == True:
+                dbUserId, dbPasswd, dbPinCode = rcol.find_one({}, notused.getUserCreds())
+                if dbDict[fuserId] == fuserId:
+                    if pwhash.str(fpasswd, chkUser[password]) == True:
                         if pwhash.str(pin_code, chkUser[pin_code]) == True:
                             return userId
                         else:
@@ -76,19 +75,18 @@ class dataBase():
 
     def findAllUsers():
         try:
-            db = self.readDb("locker","luser")
-            dbr = db["locker"]
+            dbr = dataBase.Config("read")
             rcol = dbr["luser"]
-            userinfo = rcol.findMany({}, {'_id': 0, 'username': 1})
+            userinfo = rcol.findMany({}, queries.findMany())
             return userinfo
         except PyMongoError as e:
             print(e)
 
     def addUser(chkUser, password, pin, a):
-        a = a
         try:
-            db = dataBase.getdb()
-            coll = db["userBase"]
+            fuserId, fpasswd, fpinCode, = dbDict
+            dbr = dataBase.Config("read")
+            rcol = dbr["luser"]
             data = ({'username': chkUser,
                 'password': pwhash.scryptsalsa208sha256_str(password),
                 'pin': pwhash.scryptsalsa208sha256_str(pin),
@@ -111,11 +109,11 @@ class dataBase():
 
     def modUser(chkUser, appPass, newAppPass, pin, newPin):
         try:
-            db = dataBase.getdb()
-            coll = db["userBase"]
-            data = ({'username': chkUser})
+            dbr = dataBase.Config("write")
+            rcol = dbr["luser"]
+            data = rcol.find_one_and_update({'username': chkUser})
             if data:
-                update = coll.find_one_and_update({'username': chkUser}, { '$set': { 'appPass': newAppPass, 'pin': newPin}})
+                update = rcol.findOne({}, notused.getUserCreds())
                 return update.AFTER
         except Exception as e:
             print("An exception occurred :", e)
@@ -123,3 +121,17 @@ class dataBase():
 
 
 # authSource=the_database&authMechanism=SCRAM-SHA-256"
+
+class queries():
+    def __init__():
+        self.query = None
+        self.user = None
+
+    def findUser():
+        return "{\"_id\": 0, \"userId\": 1}"
+
+    def getUserCreds():
+        return "{\"_id\": 0, \"userId\": 1, \"password\": 1, \"pin_code\": 1}"
+
+    def find_one_and_update():
+        return "({'username': chkUser}, { '$set': { 'appPass': newAppPass, 'pin': newPin}})"

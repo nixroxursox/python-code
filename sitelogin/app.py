@@ -1,5 +1,3 @@
-import hypercorn
-import asyncio
 import quart 
 ##    from quart.templating import Environment, render_template, get_template
 from quart import Quart, render_template, g, request, make_response
@@ -7,9 +5,42 @@ import jinja2
 from jinja2 import Environment, Template
 from jinja2.loaders import FileSystemLoader
 #from jinja2.loaders import DictLoader
-from flask_login import LoginManager, login_required, current_user, session
+from flask_login import LoginManager, login_required, current_user
 from flask import session
+from db.dB import dataBase, queries
+from flask_login import LoginManager, config
+import uuid
 
+
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+
+
+config_name = "prod"
+
+
+def create_app(config_name):
+    """ Server app related configuration
+    """
+    app = Quart(__name__, static_folder="static", template_folder="templates")
+    ## app.config.from_object(config[config_name])
+    ## config[config_name].init_app(app=app)
+    app.secret_key = uuid.uuid1().__str__()
+    app.jinja_env.variable_start_string = "[["
+    app.jinja_env.variable_end_string = "]]"
+    ## cache = Cache(config={"CACHE_TYPE": "simple"})
+
+    appDb = dataBase.Config("read")
+    # mail.init_app(app=app)
+    #cache.init_app(app=app)
+    login_manager.init_app(app=app)
+    #socket_io.init_app(app=app)
+
+    #from app.view import views
+    #from dialogue.pytorch.apis import apis
+    #app.register_blueprint(views)
+
+    return app
 # env = Environment(loader=DictLoader({
 # 'a': '''[A[{% block body %}{% endblock %}]]''',
 # 'b': '''{% extends 'a' %}{% block body %}[B]{% endblock %}''',
@@ -28,18 +59,7 @@ from flask import session
 # http_version = '1.1'
 # assert scope(request, response) == 'http'
 # assert request.method in methods
-
-# request = Request(methods,scheme,path="/",headers=headers,root_path="/",http_version,scope=scope)
-# response = Response()
-app = Quart(__name__)
-
-from flask_login import LoginManager
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-# Set the secret key to some random bytes. Keep this really secret!
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app = create_app("prod")
 
 @app.route('/')
 def index():
@@ -47,17 +67,6 @@ def index():
         return f'Logged in as {session["username"]}'
     return 'You are not logged in'
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        session['username'] = request.form['username']
-        return redirect(url_for('index'))
-    return '''
-        <form method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-    '''
 
 @app.route('/logout')
 def logout():
@@ -71,7 +80,6 @@ def logout():
 # from jinja2 import Environment
 # from jinja2.loaders import FileSystemLoader
 
-env = Environment(loader=FileSystemLoader('templates'))
 
 # #template = Template(directory="templates")
 # async def do_the_login():    
@@ -101,14 +109,6 @@ env = Environment(loader=FileSystemLoader('templates'))
 # ##  template = ("templates")
 # ## message = get_template("message.txt")
 
-
-app = Quart(__name__)
-
-
-
-
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 @app.post("/login")
 @app.route('/login', methods=['POST', 'GET'])
