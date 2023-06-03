@@ -26,7 +26,7 @@ class dataBase():
         authSource = "admin"
         mechanism = "SCRAM-SHA-256"
         dbObj = "locker"
-        host = "10.137.0.18"
+        host = "10.137.0.32"
         port = 27017
         if method == "read":
             dbUser = ru

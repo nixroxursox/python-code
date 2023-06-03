@@ -8,6 +8,7 @@ from jinja2 import Environment, Template
 from jinja2.loaders import FileSystemLoader
 #from jinja2.loaders import DictLoader
 from flask_login import LoginManager, login_required, current_user, session
+from flask import session
 
 # env = Environment(loader=DictLoader({
 # 'a': '''[A[{% block body %}{% endblock %}]]''',
@@ -30,7 +31,39 @@ from flask_login import LoginManager, login_required, current_user, session
 
 # request = Request(methods,scheme,path="/",headers=headers,root_path="/",http_version,scope=scope)
 # response = Response()
+app = Quart(__name__)
 
+from flask_login import LoginManager
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+# Set the secret key to some random bytes. Keep this really secret!
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+@app.route('/')
+def index():
+    if 'username' in session:
+        return f'Logged in as {session["username"]}'
+    return 'You are not logged in'
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return '''
+        <form method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('index'))
 
 
 # print(env.get_template('c').render())
@@ -41,6 +74,11 @@ from flask_login import LoginManager, login_required, current_user, session
 env = Environment(loader=FileSystemLoader('templates'))
 
 # #template = Template(directory="templates")
+# async def do_the_login():    
+#     response = await make_response("Hello")
+#     response.set_cookie("cooookie", "1")
+#     return response
+
 
 # async def show_the_login():
 #     request.method
@@ -54,6 +92,7 @@ env = Environment(loader=FileSystemLoader('templates'))
 
     
 #     return await render_template('auth/login.html')
+# return await render_template('auth/login.html')
 # tmpl = env.get_template('index.html')
 # tmp2 = template.render_async("index.html", context="hello world")
 # # print tmpl.render(seq=[3, 2, 4, 5, 3, 2, 0, 2, 1])
@@ -86,7 +125,7 @@ def login():
     return render_template('auth/login.html', error=error)
 
 
-@app.route("/") 
+@app.route("/", methods=["GET"])
 async def index():
     return 'hello'
 
