@@ -1,28 +1,40 @@
-{% extends "header.html" %}
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Registration Form</title>
 
-{% block body %}
-
+</head>
 <body>
-	<div class = "container">
-		<h4>Register</h4>
-		<br>
-		{% from "_formhelpers.html" import render_field %}
-		<form method=post action="/register/">
-			<dl>
-				{{render_field(form.username)}}
-				{{render_field(form.email)}}
-				{{render_field(form.password)}}
-				{{render_field(form.confirm)}}
-				{{render_field(form.accept_tos)}}
-			</dl>
-			<p><input type=submit value=Register></p>
-		</form>
-		
-		{% if error %}
-			<p class="error"><strong>Error:</strong>{{error}}</p>
+<div class="container">
+	<h2>Admin Registration </h2>
+	<form action="{{ url_for('register') }}" method="post">
+		{% if message is defined and message %}
+			<div class="alert alert-warning"> <strong> {{ message }} ???? </strong></div>
 		{% endif %}
+		<br>
+		<div class="form-group">
+			Name: <input type="text" class="form-control" id="NickName" name="NickName" placeholder="Enter NickName" name="nickname">
+		</div>
+		<div class="form-group">
+			Email: <input type="text" class="form-control" id="userId" name="userId" placeholder="Enter userId" name="userId">
+		</div>
+		<div class="form-group">
+			Password: <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" name="pswd">
+		</div>
+        <div class="form-group">
+			Password: <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password" name="pswd2">
+		</div>
+		<div class="form-group">
+			Password: <input type="password" class="form-control" id="pinCode" name="pinCode" placeholder="Enter PIN" name="pin">
+		</div>
+		<div class="form-group">
+			Password: <input type="password" class="form-control" id="pinCode2" name="pinCode2" placeholder="Confirm PIN" name="pin2">
+		</div>
 
-	</div>
+		<button type="submit" class="btn btn-primary">Register</button>
+		<p class="bottom">Already have an account? <a class="bottom" href="{{url_for('login')}}"> Login here</a></p>
+	</form>
+</div>	
 </body>
-
-{% endblock %}
+</html>

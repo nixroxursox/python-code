@@ -135,3 +135,8 @@ class queries():
 
     def find_one_and_update():
         return "({'username': chkUser}, { '$set': { 'appPass': newAppPass, 'pin': newPin}})"
+
+    def insert_one():
+        record = '{"userId": fuserId, "password": fpasswd, "pin_code": fpinCode, "NickName": fnickName}'
+        return record
+        

@@ -117,7 +117,7 @@ async def secure_cookie_session_interface_save_session() -> None:
     assert response.headers["Vary"] == "Cookie"
 
 
-@pytest.mark.asyncio
+
 async def _save_session(session: SecureCookieSession) -> Response:
     interface = SecureCookieSessionInterface()
     app = Quart(__name__)
@@ -127,7 +127,7 @@ async def _save_session(session: SecureCookieSession) -> Response:
     return response
 
 
-@pytest.mark.asyncio
+
 async def secure_cookie_session_interface_save_session_no_modification() -> None:
     session = SecureCookieSession()
     session["something"] = "else"
@@ -136,7 +136,7 @@ async def secure_cookie_session_interface_save_session_no_modification() -> None
     assert response.headers.get("Set-Cookie") is None
 
 
-@pytest.mark.asyncio
+
 async def secure_cookie_session_interface_save_session_no_access() -> None:
     session = SecureCookieSession()
     session["something"] = "else"

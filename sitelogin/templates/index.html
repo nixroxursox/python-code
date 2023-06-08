@@ -1,37 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
-{% block head %}
-    {{ super() }}
-    <form action="/login" method="post">
-        <div class="imgcontainer">
-          <img src="/static/img/mali.jpeg" alt="imashowuhowgreatiam" class="img">
-        </div>
-      
-        <div class="container">
-          <label for="userId"><b>Username</b></label>
-          <input type="text" placeholder="Enter Username" name="userId" required>
-      
-          <label for="psw"><b>Password</b></label>
-          <input type="password" placeholder="Enter Password" name="psw" required>
-      
-          <button type="submit">Login</button>
-          <label>
-            <input type="checkbox" checked="checked" name="remember"> Remember me
-          </label>
-        </div>
-      
-        <div class="container" style="background-color:#f1f1f1">
-          <button type="button" class="cancelbtn">Cancel</button>
-          <span class="psw">Forgot <a href="#">password?</a></span>
-        </div>
-      </form>
-
-
+ 
+{% block y %}
+ 
+   {% if session.name %}
+      You are Registered {{ session.name }} <a href="/logout">logout</a>.
+   {% else %}
+      You are not Registered. <a href="/login">login</a>.
+   {% endif %}
+ 
 {% endblock %}
-{% block content %}
-    {% include 'nav.html' %}
-{% endblock %}
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,14 +16,14 @@
 	<meta charset="utf-8">
 	<title>Python Programming Tutorials</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+	<link href="{{ url_for('static', filename='/style/css/bootstrap.min.css') }}" rel="stylesheet">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='/favicon.ico') }}">
 </head>
 
 <header>
 	<div class="navbar-header">
       <a class="navbar-brand" href="/">
-	  <img style="max-width:120px; margin-top: -7px;" src="{{ url_for('static', filename='images/mainlogo.png') }}">
+	  <img style="max-width:120px; margin-top: -7px;" src="{{ url_for('static', filename='/images/mainlogo.png') }}">
 	  </a>
     </div>
 	
@@ -159,8 +136,7 @@
 
 <body>
 
-	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<no jscript>
 
 </body>
 
