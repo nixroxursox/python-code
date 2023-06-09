@@ -8,7 +8,7 @@
 <body>
 <div class="container">
 	<h2>Admin Registration </h2>
-	<form action="{{ url_for('register') }}" method="post">
+	<form action="/register" method="post">
 		{% if message is defined and message %}
 			<div class="alert alert-warning"> <strong> {{ message }} ???? </strong></div>
 		{% endif %}
@@ -33,7 +33,7 @@
 		</div>
 
 		<button type="submit" class="btn btn-primary">Register</button>
-		<p class="bottom">Already have an account? <a class="bottom" href="{{url_for('login')}}"> Login here</a></p>
+		<p class="bottom">Already have an account? <a class="bottom" href="./auth/login.html"> Login here</a></p>
 	</form>
 </div>	
 </body>
