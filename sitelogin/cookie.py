@@ -30,7 +30,7 @@ def application(environ, start_response):
 # deserialize = nacl.encoding.Base64Encoder.decode(secret_key)
 # print(serialize, deserialize)
 
-from flask.sessions import SessionInterface, SessionMixin
+from flask.sessions import MongoDBSessionInterface, SessionMixin
 import os
 
 class SessionData(dict, SessionMixin): pass

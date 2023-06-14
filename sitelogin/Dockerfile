@@ -1,11 +1,32 @@
-Dockerfile
+FROM debian:bullseye-slim
+
+# Dockerfile
 #
 # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
 #
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
+ARG USERNAME=python
+ARG USER_UID=101
+ARG USER_GID=$USER_UID
 
-FROM debian:bullseye-slim
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    #
+    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# ********************************************************
+# * Anything else you want to do like clean up goes here *
+# ********************************************************
+
+# [Optional] Set the default user. Omit if you want to keep the default as root.
+
+
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -15,7 +36,7 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 
 # runtime dependencies
-RUN set -eux; \
+RUN set 43-eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		ca-certificates \
@@ -168,13 +189,29 @@ RUN set -eux; \
 	\
 	pip --version
 
-RUN mkdir /app 
-COPY /sitelogin/* /app/
-
-RUN  python -m pip install --upgrade wheel setuptools pip \
-    && cd /app \
-    && python -m pip install --upgrade -r requirements.txt
+RUN mkdir /app \
+    && chown -R 101:101 /app \
+	&& /usr/local/bin/python3 -m pip install --upgrade wheel setuptools pip virtualenv \
+	&& /usr/local/bin/python3 -m virtualenv $HOME/python-$PYTHON_VERSION 
 
 
-CMD ["hypercorn --debug --workers 5 main:app"]
+COPY requirements.txt /app/
 
+USER $USERNAME
+
+WORKDIR /app
+
+RUN /usr/local/bin/python3 -m pip install --upgrade wheel setuptools pip pipenv virtualenv\
+    &&  /usr/local/bin/python3 -m pip install --upgrade -r /app/requirements.txt \
+    && /home/python/.local/bin/pipenv install hypercorn
+
+ENV PATH=/home/$USERNAME/.local/bin:$PATH
+
+CMD  ['/usr/bin/tail', '-f', '/dev/null']
+
+
+
+# vol0 on /mongod type 9p (rw,relatime,sync,dirsync,access=client,trans=virtio)
+# vol1 on /nginx/conf type 9p (rw,relatime,sync,dirsync,access=client,trans=virtio)
+# vol2 on /nginx/data type 9p (rw,relatime,sync,dirsync,access=client,trans=virtio)
+# vol3 on /sitelogin type 9p (rw,relatime,sync,dirsync,access=client,trans=virtio)
