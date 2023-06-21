@@ -22,10 +22,10 @@ class dataBase:
         self.col = col
 
     def Config(method):
-        authSource = "admin"
+        authSource = "locker"
         mechanism = "SCRAM-SHA-256"
         dbObj = "locker"
-        host = "10.137.0.32"
+        host = "localhost"
         port = 27017
         if method == "read":
             dbUser = ru
@@ -62,30 +62,32 @@ class dataBase:
 
     def find(dbDict):
         try:
-            (
-                fuserId,
-                fpasswd,
-                fpinCode,
-            ) = dbDict
+            un = dbDict["username"]
+            pw = dbDict["password"]
+            dbp = dbDict["pinCode"]
             dbr = dataBase.Config("read")
             rcol = dbr["luser"]
             try:
-                dbUserId, dbPasswd, dbPinCode = rcol.find_one(
-                    {}, notused.getUserCreds()
-                )
-                if dbDict[fuserId] == fuserId:
-                    if pwhash.str(fpasswd, chkUser[password]) == True:
-                        if pwhash.str(pin_code, chkUser[pin_code]) == True:
-                            return userId
-                        else:
-                            return False
-                    else:
-                        return Fals
-                return True
+                un1,pw1,dbp1 = rcol.find_one({userId}, queries.getUserCreds())
+                if un == un1 and pw == pw1 and dbp == dbp1:
+                    return True
+                else:
+                    return False
+        #         if dbDict[fuserId] == fuserId:
+        #             if pwhash.str(fpasswd, chkUser[password]) == True:
+        #                 if pwhash.str(pin_code, chkUser[pin_code]) == True:
+        #                     return userId
+        #                 else:
+        #                     return False
+        #             else:
+        #                 return Fals
+        #         return True
             except PyMongoError as e:
                 print(e)
         except PyMongoError as e:
             print(e)
+        #     print(e)
+
 
     def findAllUsers():
         try:
@@ -151,7 +153,7 @@ class queries:
         return '{"_id": 0, "userId": 1}'
 
     def getUserCreds():
-        return '{"_id": 0, "userId": 1, "password": 1, "pin_code": 1}'
+        return '{"_id": 0, "userId": 1, "password": 1, "pinCode": 1}'
 
     def find_one_and_update():
         return "({'username': chkUser}, { '$set': { 'appPass': newAppPass, 'pin': newPin}})"

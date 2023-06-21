@@ -1,28 +1,81 @@
-# async def app(scope, receive, send):
-#     if scope["type"] != "http":
-#         raise Exception("Only the HTTP protocol is supported")
+# from starlette.applications import Starlette
+# from starlette.responses import JSONResponse, PlainTextResponse, HTMLResponse
+# import uvicorn
+# from db.dB import dataBase, queries
+# from starlette.routing import Route, Mount
+# from starlette.templating import Jinja2Templates
+# from starlette.requests import Request
+# from starlette.responses import Response
 
-#     await send({
-#         'type': 'http.response.start',
-#         'status': 200,
-#         'headers': [
-#             (b'content-type', b'text/plain'),
-#             (b'content-length', b'5'),
-#         ],
-#     })
-#     await send({
-#         'type': 'http.response.body',
-#         'body': b'hello',
-#     })
+from starlette.applications import Starlette, Request, Response
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.routing import Route
+import uvicorn
+from db.dB import dataBase, queries
+from starlette_login.backends import SessionAuthBackend
+from starlette_login.login_manager import LoginManager
+from starlette_login.middleware import AuthenticationMiddleware
+import lib.logging as logging
+from lib.model import user_list
+from lib.routes import home_page, login_page, logout_page, protected_page
 
-from quart import Quart
 
-app = Quart(__name__)
+login_manager = LoginManager(redirect_to='login', secret_key='secret')
+login_manager.set_user_loader(user_list.user_loader)
 
-@app.route("/hello")
-async def hello():
-    return "Hello, World!"
+app = Starlette(
+    middleware=[
+        Middleware(SessionMiddleware, secret_key='secret'),
+        Middleware(
+            AuthenticationMiddleware,
+            backend=SessionAuthBackend(login_manager),
+            login_manager=login_manager,
+            login_route='login',
+            allow_websocket=False,
+        )
+    ],
+
+    routes=[
+        Route('/', home_page, name='home'),
+        Route('/login', login_page, methods=['GET', 'POST'], name='login'),
+        Route('/logout', logout_page, name='logout'),
+        Route('/protected', protected_page, name='protected'),
+    ],
+)
+app.state.login_manager = login_manager
+
+
+
+
+
+# templates = Jinja2Templates(directory='templates', autoescape=False, auto_reload=True)
+  
+
+# async def homepage(request):
+#     return JSONResponse({'hello': 'world'})
+
+# routes = [
+#     Route("/", endpoint=homepage),
+#     Route("/login", methods=["GET", "POST"], endpoint="login")
+# ]
+
+# def startup():
+#     db = dataBase.Config("read")
+#     rdb = db["luser"]
+
+    
+# app = Starlette(debug=True, on_startup=[startup], routes=routes)
+
+# async def login(request):
+#     if request.method == 'GET':
+#         return templates.TemplateResponse("auth/login.html", {"request": request})
+#     else:
+#         fUser = request.form["username"]
+#         user = await rdb.find({}, {queries.findUser})
+        
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
+    config = uvicorn.Config("main:app", port=8000, log_level="debug", uds="/tmp/starlette.sock")
+    server = uvicorn.Server(config)
+    server.run()

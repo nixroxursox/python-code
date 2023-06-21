@@ -2,7 +2,6 @@ import nacl
 from nacl import pwhash, encoding, secret
 from decouple import config
 from Cache import Cache
-from quart import Quart, render_template, request, redirect, url_for, session, flash
 
 
 secret_key = config("SESS_SECRET_KEY")

@@ -1,55 +1,68 @@
-from quart import Quart, render_template, websocket, url_for, make_push_promise, redirect
-from quart.routing import QuartMap, QuartRule
+# from quart import Quart, render_template, websocket, url_for, make_push_promise, redirect
+# from quart.routing import QuartMap, QuartRule
 from decouple import config
-import os
-from quart_auth import Unauthorized
-from flask import Flask, session
-from flask_session import MongoDBSessionInterface as mbdsi
-from flask_session import Session
+# import os
+# from quart_auth import Unauthorized
+# from flask import Flask, session
+# from flask_session import MongoDBSessionInterface as mbdsi
+# from flask_session import Session
 import asyncio
-from hypercorn.asyncio import serve
+# from hypercorn.asyncio import serve
 from db.dB import dataBase
+import uvicorn
+
+async def http_server():
+    def __call__(self, scope, receive, send):
+        assert scope["type"] == "http"
+        if scope["type"] != "http" or scope["http_method"]!= "GET":
+            async send({"type": "http.response.start", "status": 405, "headers": []})
+        return
+            async send({"type": "http.response.body", "body": b"Method Not Allowed"})
+        return
+    return __call__
+
+            
 
 
-def create_app():
-    app = Quart(__name__, template_folder="templates")
-    app.secret_key = config("SESS_SECRET_KEY")
-    app.config["SESSION_TYPE"] = "mongodb"
-    app.config["SESSION_PERMANENT"] = False
-    app.config["SESSION_USE_SIGNER"] = True
-    Session(app)
-    return app
+# def create_app():
+#     app = Quart(__name__, template_folder="templates")
+#     app.secret_key = config("SESS_SECRET_KEY")
+#     app.config["SESSION_TYPE"] = "mongodb"
+#     app.config["SESSION_PERMANENT"] = False
+#     app.config["SESSION_USE_SIGNER"] = True
+#     Session(app)
+#     return app
 
 
-app = create_app()
+# app = create_app()
 
 
-@app.route("/")
-async def hello():
-    return await render_template("index.html", context="Hello World")
+# @app.route("/")
+# async def hello():
+#     return await render_template("index.html", context="Hello World")
 
     
-@app.route("/api")
-async def json():
-    return {"hello": "world"}
+# @app.route("/api")
+# async def json():
+#     return {"hello": "world"}
 
-@app.errorhandler(Unauthorized)
-async def redirect_to_login(*_):
-    return redirect(url_for("login"))
-
-
-@app.route('/set/')
-def set():
-    session['key'] = 'value'
-    return 'ok'
-
-@app.route('/get/')
-def get():
-    return session.get('key', 'not set')
+# @app.errorhandler(Unauthorized)
+# async def redirect_to_login(*_):
+#     return redirect(url_for("login"))
 
 
-if __name__ == "__main__":
-    asyncio.run(serve(app, config))
+# @app.route('/set/')
+# def set():
+#     session['key'] = 'value'
+#     return 'ok'
+
+# @app.route('/get/')
+# def get():
+#     return session.get('key', 'not set')
+
+
+# if __name__ == "__main__":
+#     asyncio.run(serve(app, config))
     
     
 # Bases: object
