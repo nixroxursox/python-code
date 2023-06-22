@@ -8,7 +8,7 @@ from starlette.responses import (
 from starlette_login.decorator import login_required
 from starlette_login.utils import login_user, logout_user
 
-from .model import user_list
+from lib.model import user_list
 
 
 HOME_PAGE = "You are logged in as {{ user.username }}"

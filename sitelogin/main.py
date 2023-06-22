@@ -6,7 +6,7 @@
 # from starlette.templating import Jinja2Templates
 # from starlette.requests import Request
 # from starlette.responses import Response
-
+from decouple import config
 from starlette.applications import Starlette, Request, Response
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -17,21 +17,32 @@ from starlette_login.backends import SessionAuthBackend
 from starlette_login.login_manager import LoginManager
 from starlette_login.middleware import AuthenticationMiddleware
 import lib.logging as logging
-from lib.model import user_list
+from user import userList
+import lib.routes as routes
 from lib.routes import home_page, login_page, logout_page, protected_page
+from starlette.templating import Jinja2Templates
+sk = config('SECRET_KEY')
+
+login_manager = LoginManager(redirect_to='login', secret_key=sk)
+template = Jinja2Templates(directory='templates')
 
 
-login_manager = LoginManager(redirect_to='login', secret_key='secret')
-login_manager.set_user_loader(user_list.user_loader)
+login_manager = LoginManager(redirect_to='login', secret_key=sk)
+login_manager.set_user_loader(userList.usersAll())
+
+
+
+login_manager = LoginManager(redirect_to='login', secret_key=sk)
+template = Jinja2Templates(directory='templates')
 
 app = Starlette(
     middleware=[
-        Middleware(SessionMiddleware, secret_key='secret'),
+        Middleware(SessionMiddleware, secret_key=sk),
         Middleware(
             AuthenticationMiddleware,
             backend=SessionAuthBackend(login_manager),
             login_manager=login_manager,
-            login_route='login',
+            #login_route='login',
             allow_websocket=False,
         )
     ],
@@ -49,7 +60,7 @@ app.state.login_manager = login_manager
 
 
 
-# templates = Jinja2Templates(directory='templates', autoescape=False, auto_reload=True)
+templates = Jinja2Templates(directory='templates', autoescape=False, auto_reload=True)
   
 
 # async def homepage(request):

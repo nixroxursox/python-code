@@ -1,12 +1,12 @@
 import nacl
 from nacl import pwhash, encoding, secret
 from decouple import config
-from Cache import Cache
+#from Cache import Cache
 
 
 secret_key = config("SESS_SECRET_KEY")
 
-@cached_property
+
 def client_session(self):
         data = self.cookies.get('session_data')
         if not data:

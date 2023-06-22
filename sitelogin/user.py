@@ -1,5 +1,5 @@
-import pynacl
-from pynacl import pwhash, verify, utils, encoding
+import nacl
+from nacl import pwhash, utils, encoding
 from db.dB import dataBase, queries
 from nacl import pwhash, utils, encoding
 from pymongo.errors import PyMongoError
@@ -8,8 +8,8 @@ from pymongo.errors import PyMongoError
 class user():
     def __init__() -> None:
         self.userId = None
-        self.passwd = None
-        self.pinCode = None
+        self.password = None
+        self.pin_code = None
 
     def checkLogin(dbDict):
         try:
@@ -24,3 +24,22 @@ class user():
         except PyMongoError as e:
             print(e)
             return False
+
+class userList():
+    def __init__():
+        dbUser = None
+    
+    
+    def user_loader(username):
+        fUser = username
+        db = dataBase.Config("read")
+        rdb = db["luser"]
+        users = rdb.find({"userId": fUser})
+        return users
+    
+
+    def usersAll():
+        db = dataBase.Config("read")
+        rdb = db["luser"]
+        usersAll = rdb.find({}, {"_id": 0, "userId": 1})
+        return usersAll

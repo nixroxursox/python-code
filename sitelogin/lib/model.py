@@ -1,8 +1,10 @@
 import typing
 from dataclasses import dataclass
-
+import user
+from user import userList
 from starlette.requests import Request
 from starlette_login.mixins import UserMixin
+from db.dB import dataBase, queries
 
 
 @dataclass
@@ -27,7 +29,7 @@ class User(UserMixin):
         return self.identifier
 
 
-class UserList:
+class UserList():
     def __init__(self):
         self.user_list = []
 
@@ -50,7 +52,11 @@ class UserList:
         return True
 
     def get_by_username(self, username: str) -> typing.Optional[User]:
-        return self.dict_username().get(username)
+        self.username = username
+        db = dataBase.Config("read")
+        rdb = db["luser"]
+        userName = rdb.find_one({"userId": username})
+        return userName
 
     def get_by_id(self, identifier: int) -> typing.Optional[User]:
         return self.dict_id().get(identifier)
@@ -59,6 +65,6 @@ class UserList:
         return self.get_by_id(user_id)
 
 
-user_list = UserList()
-user_list.add(User(identifier=1, username='user1', password='password'))
-user_list.add(User(identifier=2, username='user2', password='password'))
+user_list = userList.usersAll()
+##user_list.add(User(identifier=1, username='user1', password='password'))
+##user_list.add(User(identifier=2, username='user2', password='password'))
