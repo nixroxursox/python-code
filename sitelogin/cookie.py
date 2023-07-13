@@ -1,17 +1,23 @@
 import nacl
 from nacl import pwhash, encoding, secret
 from decouple import config
-#from Cache import Cache
+from flask_mongo_sessions import MongoDBSessionInterface, SessionMixin
+import os
+#from cache import Cache
+import flask
+import flask_sessions
+import flask_session
 
-
-secret_key = config("SESS_SECRET_KEY")
+secret_key = config("B_SESS_SECRET_KEY")
+def SessionInterface(): pass
 
 
 def client_session(self):
-        data = self.cookies.get('session_data')
-        if not data:
-            return SecureCookie(secret_key)
-        return SecureCookie.unserialize(data, secret_key)
+    data = self.cookies.get("session_data")
+    if not data:
+        return SecureCookie(secret_key)
+    return SecureCookie.unserialize(data, secret_key)
+
 
 def application(environ, start_response):
     request = Request(environ)
@@ -21,18 +27,18 @@ def application(environ, start_response):
 
     if request.client_session.should_save:
         session_data = request.client_session.serialize()
-        response.set_cookie('session_data', session_data,
-                            httponly=True)
+        response.set_cookie("session_data", session_data, httponly=True)
         return response(environ, start_response)
 
-# serialize = nacl.encoding.Base64Encoder.encode(secret_key)
-# deserialize = nacl.encoding.Base64Encoder.decode(secret_key)
-# print(serialize, deserialize)
 
-from flask.sessions import MongoDBSessionInterface, SessionMixin
-import os
+serialize = nacl.encoding.Base64Encoder.encode(secret_key)
+deserialize = nacl.encoding.Base64Encoder.decode(secret_key)
+#print(serialize, deserialize)
 
-class SessionData(dict, SessionMixin): pass
+
+class SessionData(dict, SessionMixin):
+    pass
+
 
 class Session(SessionInterface):
     session_class = SessionData
@@ -41,15 +47,12 @@ class Session(SessionInterface):
         self.cookie_session_id = request.cookies.get(app.session_cookie_name, type=str)
         self.session_new = False
         if self.cookie_session_id is None:
-            self.cookie_session_id = os.urandom(40).encode('hex')
+            self.cookie_session_id = os.urandom(40).encode("hex")
             self.session_new = True
-        self.memcache_session_id = '@'.join(
-                    [
-                        request.remote_addr,
-                        self.cookie_session_id
-                    ]
-                )
-        app.logger.debug('Open session %s', self.memcache_session_id)
+        self.memcache_session_id = "@".join(
+            [request.remote_addr, self.cookie_session_id]
+        )
+        app.logger.debug("Open session %s", self.memcache_session_id)
         session = app.cache.get(self.memcache_session_id) or {}
         app.cache.set(self.memcache_session_id, session)
         return self.session_class(session)
@@ -62,10 +65,18 @@ class Session(SessionInterface):
         secure = self.get_cookie_secure(app)
         app.cache.set(self.memcache_session_id, session)
         if self.session_new:
-            response.set_cookie(app.session_cookie_name, self.cookie_session_id, path=path,
-                                expires=expires, httponly=httponly,
-                                secure=secure, domain=domain)
-            app.logger.debug('Set session %s with %s', self.memcache_session_id, session)
+            response.set_cookie(
+                app.session_cookie_name,
+                self.cookie_session_id,
+                path=path,
+                expires=expires,
+                httponly=httponly,
+                secure=secure,
+                domain=domain,
+            )
+            app.logger.debug(
+                "Set session %s with %s", self.memcache_session_id, session
+            )
 
 
 async def secure_cookie_session_interface_open_session() -> None:
