@@ -20,10 +20,10 @@ from starlette.responses import Response
 from starlette.applications import Starlette
 from starlette.routing import Route
 
-routes = ([
-    Route('/', endpoint="index"),
-    Route("/login", methods=["GET", "POST"], endpoint="login")
-])
+routes = [
+    Route("/", endpoint="index"),
+    Route("/login", methods=["GET", "POST"], endpoint="login"),
+]
 request = Request(scope="http")
 response = Response()
 
@@ -40,7 +40,7 @@ response = Response()
 #         'formatters': {
 #             'default': {
 #                 'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-#                 'datefmt': '%Y-%m-%d %H:%M:%S' 
+#                 'datefmt': '%Y-%m-%d %H:%M:%S'
 # )
 # async def app(scope, receive, send):
 #     if scope["type"] != "http":
@@ -64,7 +64,7 @@ response = Response()
 #     await send({
 #         'type': 'http.disconnect',
 #     })
-    
+
 # from quart import Quart, render_template, websocket, url_for, make_push_promise, redirect
 # from quart.routing import QuartMap, QuartRule
 # from decouple import config
@@ -87,15 +87,11 @@ response = Response()
 # class App:
 #     async def __call__(self, scope, receive, send):
 #         assert scope['type'] == 'http'
-        
-    
-    
+
+
 # app = App()
 
 environ = Environment(loader=FileSystemLoader("templates"))
-
-
-
 
 
 ## app.mount("/static", StaticFiles(directory="/nginx/data/static"), name="static")
@@ -103,14 +99,13 @@ environ = Environment(loader=FileSystemLoader("templates"))
 templates = Jinja2Templates(directory="templates")
 
 
-
 async def app(scope, receive, send):
-    assert scope['type'] == 'http'
-    if scope['type'] != 'http':
+    assert scope["type"] == "http"
+    if scope["type"] != "http":
         raise Exception("Only the HTTP protocol is supported")
     request = Request(scope, receive)
-    content = '%s %s %s' % (request.method, request.url.path, request.headers)
-    response = Response(content, media_type='text/plain') 
+    content = "%s %s %s" % (request.method, request.url.path, request.headers)
+    response = Response(content, media_type="text/plain")
     await response(scope, receive, send)
 
 
@@ -130,7 +125,7 @@ def read_item(item_id: int, q: Union[str, None] = None):
 
 @app.post("/login/")
 async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
-    dbUsername = dataBase.find("user1","pass1","pin1")
+    dbUsername = dataBase.find("user1", "pass1", "pin1")
     print(dbUsername)
     if dbUsername == username:
         return {"username": username}
@@ -138,12 +133,14 @@ async def login(username: Annotated[str, Form()], password: Annotated[str, Form(
         raise HTTPException(status_code=404, detail="Username not found")
 
 
-
 @app.get("/items/", operation_id="some_specific_id_you_define")
 async def read_items():
     return [{"item_id": "Foo"}]
 
+
 if __name__ == "__main__":
-    config = uvicorn.Config("main:app", port=8000, log_level="debug", uds="/tmp/fastapi.sock")
+    config = uvicorn.Config(
+        "main:app", port=8000, log_level="debug", uds="/tmp/fastapi.sock"
+    )
     server = uvicorn.Server(config)
     server.run()

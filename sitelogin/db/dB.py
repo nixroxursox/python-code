@@ -68,26 +68,25 @@ class dataBase:
             dbr = dataBase.Config("read")
             rcol = dbr["luser"]
             try:
-                un1,pw1,dbp1 = rcol.find_one({userId}, queries.getUserCreds())
+                un1, pw1, dbp1 = rcol.find_one({userId}, queries.getUserCreds())
                 if un == un1 and pw == pw1 and dbp == dbp1:
                     return True
                 else:
                     return False
-        #         if dbDict[fuserId] == fuserId:
-        #             if pwhash.str(fpasswd, chkUser[password]) == True:
-        #                 if pwhash.str(pin_code, chkUser[pin_code]) == True:
-        #                     return userId
-        #                 else:
-        #                     return False
-        #             else:
-        #                 return Fals
-        #         return True
+            #         if dbDict[fuserId] == fuserId:
+            #             if pwhash.str(fpasswd, chkUser[password]) == True:
+            #                 if pwhash.str(pin_code, chkUser[pin_code]) == True:
+            #                     return userId
+            #                 else:
+            #                     return False
+            #             else:
+            #                 return Fals
+            #         return True
             except PyMongoError as e:
                 print(e)
         except PyMongoError as e:
             print(e)
         #     print(e)
-
 
     def findAllUsers():
         try:

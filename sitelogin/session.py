@@ -5,12 +5,18 @@ from typing import Generator
 
 from quart.app import Quart
 from quart.datastructures import CIMultiDict
-from quart.sessions import NullSession, SecureCookieSession, SecureCookieSessionInterface
+from quart.sessions import (
+    NullSession,
+    SecureCookieSession,
+    SecureCookieSessionInterface,
+)
 from quart.wrappers import Request, Response
 
 
 @contextmanager
-def _secure_cookie_session(attribute: str) -> Generator[SecureCookieSession, None, None]:
+def _secure_cookie_session(
+    attribute: str,
+) -> Generator[SecureCookieSession, None, None]:
     session = SecureCookieSession({"a": "b"})
     assert hasattr(session, attribute)
     assert not getattr(session, attribute)
@@ -72,7 +78,6 @@ async def secure_cookie_session_interface_open_session() -> None:
     assert new_session == session
 
 
-
 async def secure_cookie_session_interface_save_session() -> None:
     session = SecureCookieSession()
     session["something"] = "else"
@@ -94,7 +99,6 @@ async def secure_cookie_session_interface_save_session() -> None:
     assert response.headers["Vary"] == "Cookie"
 
 
-
 async def _save_session(session: SecureCookieSession) -> Response:
     interface = SecureCookieSessionInterface()
     app = Quart(__name__)
@@ -104,14 +108,12 @@ async def _save_session(session: SecureCookieSession) -> Response:
     return response
 
 
-
 async def secure_cookie_session_interface_save_session_no_modification() -> None:
     session = SecureCookieSession()
     session["something"] = "else"
     session.modified = False
     response = await _save_session(session)
     assert response.headers.get("Set-Cookie") is None
-
 
 
 async def secure_cookie_session_interface_save_session_no_access() -> None:

@@ -15,7 +15,6 @@ async def logout():
     return redirect(url_for("login"))
 
 
-
 @app.route("/register", methods=["GET", "POST"])
 async def register():
     message = ""
@@ -25,7 +24,7 @@ async def register():
         "fpinCode": "request.form['pinCode']",
         "fuserId": "request.form['userId']",
     }
- 
+
 
 # Add data to MongoDB route
 @app.route("/add_data", methods=["POST"])
@@ -56,16 +55,16 @@ async def add_data():
 #         return render_template("login.html", message=message)
 
 
- #Make a register session for registration session
+# Make a register session for registration session
 # and also connect to Mysql to code for access login
 # and for completing our login
 # session and making some flashing massage for error
 
-   # dbw = dataBase.Config("write")
-    # rcol = dbw["luser"]
-    # rcol.insert_one({}, queries.insert_one())
-    # 	## g(userId, NickName, password, pinCode ))
-    # message = 'You have successfully registered !'
-    # elif request.method == 'POST':
-    # 	message = 'Please fill out the form !'
-    # return render_template('register.html', message=message)
+# dbw = dataBase.Config("write")
+# rcol = dbw["luser"]
+# rcol.insert_one({}, queries.insert_one())
+# 	## g(userId, NickName, password, pinCode ))
+# message = 'You have successfully registered !'
+# elif request.method == 'POST':
+# 	message = 'Please fill out the form !'
+# return render_template('register.html', message=message)

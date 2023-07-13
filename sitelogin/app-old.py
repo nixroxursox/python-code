@@ -1,35 +1,51 @@
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_login import (
+    LoginManager,
+    login_user,
+    logout_user,
+    current_user,
+    login_required,
+)
 import quart
 import asyncio
 from typing import Optional
 
-from quart import Response, Quart, Session, render_template, request, session, ASGIHTTPConnection, Response
+from quart import (
+    Response,
+    Quart,
+    Session,
+    render_template,
+    request,
+    session,
+    ASGIHTTPConnection,
+    Response,
+)
 import nacl
 from nacl import pwhash, encoding, utils
 from decouple import config
+
 secret_key = config("SESS_SECRET_KEY")
-#import cache
-#import middleware
-#import user
-#import register
+# import cache
+# import middleware
+# import user
+# import register
 
 
+# Sdef http_1_1_host_header(headers: list, expected: str) -> None:
 
-#Sdef http_1_1_host_header(headers: list, expected: str) -> None:
- 
 
 def create_app():
-    app = Quart(__name__, static_folder = "static", template_folder = "templates")
+    app = Quart(__name__, static_folder="static", template_folder="templates")
     request = connection._create_request_from_scope(lambda: None)
-    assert request.headers["host"] == "expected" 
+    assert request.headers["host"] == "expected"
     app.config["SESSION_PERMANENT"] = False
-    #app.config["SESSION_TYPE"] = "memcached"
-    app.config['SECRET_KEY'] = secret_key
-    login_manager = LoginManager() 
+    # app.config["SESSION_TYPE"] = "memcached"
+    app.config["SECRET_KEY"] = secret_key
+    login_manager = LoginManager()
     login_manager.init_app(app=app)
     app.clients = set()
     Session(app)
     return app
+
 
 scope = {
     "headers": "headers",
@@ -46,19 +62,16 @@ connection = ASGIHTTPConnection(app, scope)
 app.clients.add(connection)
 
 
-
-
 class ServerSentEvent:
-
     def __init__(
-            self,
-            data: str,
-            *,
-            event: Optional[str]=None,
-            id: Optional[int]=None,
-            retry: Optional[int]=None,
+        self,
+        data: str,
+        *,
+        event: Optional[str] = None,
+        id: Optional[int] = None,
+        retry: Optional[int] = None,
     ) -> None:
-        self.data = data    
+        self.data = data
         request = connection._create_request_from_scope(lambda: None)
         self.event = event
         self.id = id
@@ -73,31 +86,29 @@ class ServerSentEvent:
         if self.retry is not None:
             message = f"{message}\nretry: {self.retry}"
         message = f"{message}\r\n\r\n"
-        return message.encode('utf-8')
+        return message.encode("utf-8")
 
 
-
-@app.route('/', methods=['GET'])
+@app.route("/", methods=["GET"])
 async def index():
     response = await client.get("/")
     secure_cookie_session_interface_open_session()
-    return await render_template('index.html')
+    return await render_template("index.html")
 
 
-@app.route('/', methods=['POST'])
+@app.route("/", methods=["POST"])
 async def broadcast():
-    data = await request.get(await quart.formData('fuserId'))
+    data = await request.get(await quart.formData("fuserId"))
     for queue in app.clients:
-        await queue.put(data['message'])
+        await queue.put(data["message"])
     return jsonify(True)
- 
 
- 
+
 @app.route("/logout")
 def logout():
     session["name"] = None
     return redirect("/")
- 
+
 
 # -*- coding: utf-8 -*-
 """
@@ -111,19 +122,18 @@ def logout():
 """
 
 
+SESSION_TYPE = "redis"
 
-SESSION_TYPE = 'redis'
 
-
-@app.route('/set/')
+@app.route("/set/")
 async def set():
-    session['key'] = 'value'
-    return 'ok'
+    session["key"] = "value"
+    return "ok"
 
 
-@app.route('/get/')
+@app.route("/get/")
 async def get():
-    return session.get('key', 'not set')
+    return session.get("key", "not set")
 
 
 if __name__ == "__main__":

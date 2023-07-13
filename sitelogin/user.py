@@ -5,7 +5,7 @@ from nacl import pwhash, utils, encoding
 from pymongo.errors import PyMongoError
 
 
-class user():
+class user:
     def __init__() -> None:
         self.userId = None
         self.password = None
@@ -25,18 +25,18 @@ class user():
             print(e)
             return False
 
-class userList():
+
+class userList:
     def __init__():
         dbUser = None
-    
-    
+
     def user_loader(username):
         fUser = username
         db = dataBase.Config("read")
         rdb = db["luser"]
         users = rdb.find({"userId": fUser})
+        print(fUser)
         return users
-    
 
     def usersAll():
         db = dataBase.Config("read")

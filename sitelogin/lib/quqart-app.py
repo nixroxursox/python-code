@@ -8,14 +8,30 @@ from logging import Logger
 from pathlib import Path
 from ssl import SSLContext
 from types import TracebackType
-from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, Union, ValuesView  # noqa
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    ValuesView,
+)  # noqa
 
 from .blueprints import Blueprint
 from .cli import AppGroup
 from .config import Config, ConfigAttribute, DEFAULT_CONFIG
 from .ctx import (
-    _AppCtxGlobals, _request_ctx_stack, _websocket_ctx_stack, AppContext, has_request_context,
-    has_websocket_context, RequestContext, WebsocketContext,
+    _AppCtxGlobals,
+    _request_ctx_stack,
+    _websocket_ctx_stack,
+    AppContext,
+    has_request_context,
+    has_websocket_context,
+    RequestContext,
+    WebsocketContext,
 )
 from .datastructures import CIMultiDict
 from .exceptions import all_http_exceptions, HTTPException
@@ -27,11 +43,18 @@ from .routing import Map, MapAdapter, Rule
 from .serving import run_app
 from .sessions import SecureCookieSessionInterface, Session
 from .signals import (
-    appcontext_tearing_down, got_request_exception, request_finished, request_started,
+    appcontext_tearing_down,
+    got_request_exception,
+    request_finished,
+    request_started,
     request_tearing_down,
 )
 from .static import PackageStatic
-from .templating import _default_template_context_processor, DispatchingJinjaLoader, Environment
+from .templating import (
+    _default_template_context_processor,
+    DispatchingJinjaLoader,
+    Environment,
+)
 from .testing import TestClient
 from .typing import ResponseReturnValue
 from .utils import ensure_coroutine
@@ -80,35 +103,37 @@ class Quart(PackageStatic):
         session_interface: The class to use as the session interface.
         url_rule_class: The class to use for URL rules.
     """
+
     app_ctx_globals_class = _AppCtxGlobals
     config_class = Config
-    debug = ConfigAttribute('DEBUG')
+    debug = ConfigAttribute("DEBUG")
     jinja_environment = Environment
     jinja_options = {
-        'autoescape': True,
-        'extensions': ['jinja2.ext.autoescape', 'jinja2.ext.with_'],
+        "autoescape": True,
+        "extensions": ["jinja2.ext.autoescape", "jinja2.ext.with_"],
     }
     json_decoder = JSONDecoder
     json_encoder = JSONEncoder
     permanent_session_lifetime = ConfigAttribute(
-        'PERMANENT_SESSION_LIFETIME', converter=_convert_timedelta,
+        "PERMANENT_SESSION_LIFETIME",
+        converter=_convert_timedelta,
     )
     request_class = Request
     response_class = Response
-    secret_key = ConfigAttribute('SECRET_KEY')
-    session_cookie_name = ConfigAttribute('SESSION_COOKIE_NAME')
+    secret_key = ConfigAttribute("SECRET_KEY")
+    session_cookie_name = ConfigAttribute("SESSION_COOKIE_NAME")
     session_interface = SecureCookieSessionInterface()
     test_client_class = TestClient
-    testing = ConfigAttribute('TESTING')
+    testing = ConfigAttribute("TESTING")
     url_rule_class = Rule
 
     def __init__(
-            self,
-            import_name: str,
-            static_url_path: Optional[str]=None,
-            static_folder: Optional[str]='static',
-            template_folder: Optional[str]='templates',
-            root_path: Optional[str]=None,
+        self,
+        import_name: str,
+        static_url_path: Optional[str] = None,
+        static_folder: Optional[str] = "static",
+        template_folder: Optional[str] = "templates",
+        root_path: Optional[str] = None,
     ) -> None:
         """Construct a Quart web application.
 
@@ -130,22 +155,42 @@ class Quart(PackageStatic):
 
         self.config = self.make_config()
 
-        self.after_request_funcs: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(list)
+        self.after_request_funcs: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(
+            list
+        )
         self.before_first_request_funcs: List[Callable] = []
-        self.before_request_funcs: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(list)
+        self.before_request_funcs: Dict[
+            AppOrBlueprintKey, List[Callable]
+        ] = defaultdict(list)
         self.blueprints: Dict[str, Blueprint] = OrderedDict()
-        self.error_handler_spec: Dict[AppOrBlueprintKey, Dict[Exception, Callable]] = defaultdict(dict)  # noqa: E501
+        self.error_handler_spec: Dict[
+            AppOrBlueprintKey, Dict[Exception, Callable]
+        ] = defaultdict(
+            dict
+        )  # noqa: E501
         self.extensions: Dict[str, Any] = {}
         self.shell_context_processors: List[Callable] = []
         self.static_folder = static_folder
         self.static_url_path = static_url_path
         self.teardown_appcontext_funcs: List[Callable] = []
-        self.teardown_request_funcs: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(list)  # noqa: E501
-        self.template_context_processors: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(list)  # noqa: E501
+        self.teardown_request_funcs: Dict[
+            AppOrBlueprintKey, List[Callable]
+        ] = defaultdict(
+            list
+        )  # noqa: E501
+        self.template_context_processors: Dict[
+            AppOrBlueprintKey, List[Callable]
+        ] = defaultdict(
+            list
+        )  # noqa: E501
         self.url_build_error_handlers: List[Callable] = []
-        self.url_default_functions: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(list)
+        self.url_default_functions: Dict[
+            AppOrBlueprintKey, List[Callable]
+        ] = defaultdict(list)
         self.url_map = Map()
-        self.url_value_preprocessors: Dict[AppOrBlueprintKey, List[Callable]] = defaultdict(list)
+        self.url_value_preprocessors: Dict[
+            AppOrBlueprintKey, List[Callable]
+        ] = defaultdict(list)
         self.view_functions: Dict[str, Callable] = {}
 
         self._got_first_request = False
@@ -156,8 +201,9 @@ class Quart(PackageStatic):
         self.cli = AppGroup(self.name)
         if self.has_static_folder:
             self.add_url_rule(
-                f"{self.static_url_path}/<path:filename>", self.send_static_file,
-                endpoint='static',
+                f"{self.static_url_path}/<path:filename>",
+                self.send_static_file,
+                endpoint="static",
             )
 
         self.template_context_processors[None] = [_default_template_context_processor]
@@ -169,8 +215,8 @@ class Quart(PackageStatic):
         This is taken from the :attr:`import_name` and is used for
         debugging purposes.
         """
-        if self.import_name == '__main__':
-            path = Path(getattr(sys.modules['__main__'], '__file__', '__main__.py'))
+        if self.import_name == "__main__":
+            path = Path(getattr(sys.modules["__main__"], "__file__", "__main__.py"))
             return path.stem
         return self.import_name
 
@@ -202,7 +248,9 @@ class Quart(PackageStatic):
         """Create and return the configuration with appropriate defaults."""
         return self.config_class(self.root_path, DEFAULT_CONFIG)
 
-    def create_url_adapter(self, request: Optional[BaseRequestWebsocket]) -> Optional[MapAdapter]:
+    def create_url_adapter(
+        self, request: Optional[BaseRequestWebsocket]
+    ) -> Optional[MapAdapter]:
         """Create and return a URL adapter.
 
         This will create the adapter based on the request if present
@@ -210,12 +258,16 @@ class Quart(PackageStatic):
         """
         if request is not None:
             return self.url_map.bind_to_request(
-                request.scheme, request.server_name, request.method, request.path,
+                request.scheme,
+                request.server_name,
+                request.method,
+                request.path,
             )
 
-        if self.config['SERVER_NAME'] is not None:
+        if self.config["SERVER_NAME"] is not None:
             return self.url_map.bind(
-                self.config['PREFERRED_URL_SCHEME'], self.config['SERVER_NAME'],
+                self.config["PREFERRED_URL_SCHEME"],
+                self.config["SERVER_NAME"],
             )
         return None
 
@@ -227,19 +279,21 @@ class Quart(PackageStatic):
         environment will include the Quart globals by default.
         """
         options = dict(self.jinja_options)
-        if 'autoescape' not in options:
-            options['autoescape'] = self.select_jinja_autoescape
-        if 'auto_reload' not in options:
-            options['auto_reload'] = self.config['TEMPLATES_AUTO_RELOAD'] or self.debug
+        if "autoescape" not in options:
+            options["autoescape"] = self.select_jinja_autoescape
+        if "auto_reload" not in options:
+            options["auto_reload"] = self.config["TEMPLATES_AUTO_RELOAD"] or self.debug
         jinja_env = self.jinja_environment(self, **options)
-        jinja_env.globals.update({
-            'config': self.config,
-            'g': g,
-            'get_flashed_messages': get_flashed_messages,
-            'request': request,
-            'session': session,
-            'url_for': url_for,
-        })
+        jinja_env.globals.update(
+            {
+                "config": self.config,
+                "g": g,
+                "get_flashed_messages": get_flashed_messages,
+                "request": request,
+                "session": session,
+                "url_for": url_for,
+            }
+        )
         return jinja_env
 
     def create_global_jinja_loader(self) -> DispatchingJinjaLoader:
@@ -250,7 +304,7 @@ class Quart(PackageStatic):
         """Returns True if the filename indicates that it should be escaped."""
         if filename is None:
             return True
-        return Path(filename).suffix in {'.htm', '.html', '.xhtml', '.xml'}
+        return Path(filename).suffix in {".htm", ".html", ".xhtml", ".xml"}
 
     def update_template_context(self, context: dict) -> None:
         """Update the provided template context.
@@ -279,17 +333,17 @@ class Quart(PackageStatic):
         The :attr:`shell_context_processors` can be used to add
         additional context.
         """
-        context = {'app': self, 'g': g}
+        context = {"app": self, "g": g}
         for processor in self.shell_context_processors:
             context.update(processor())
         return context
 
     def route(
-            self,
-            path: str,
-            methods: List[str]=['GET'],
-            *,
-            provide_automatic_options: bool=True
+        self,
+        path: str,
+        methods: List[str] = ["GET"],
+        *,
+        provide_automatic_options: bool = True,
     ) -> Callable:
         """Add a route to the application.
 
@@ -307,21 +361,26 @@ class Quart(PackageStatic):
             provide_automatic_options: Optionally False to prevent
                 OPTION handling.
         """
+
         def decorator(func: Callable) -> Callable:
             self.add_url_rule(
-                path, func, methods, provide_automatic_options=provide_automatic_options,
+                path,
+                func,
+                methods,
+                provide_automatic_options=provide_automatic_options,
             )
             return func
+
         return decorator
 
     def add_url_rule(
-            self,
-            path: str,
-            view_func: Callable,
-            methods: Optional[List[str]]=None,
-            endpoint: Optional[str]=None,
-            *,
-            provide_automatic_options: bool=True
+        self,
+        path: str,
+        view_func: Callable,
+        methods: Optional[List[str]] = None,
+        endpoint: Optional[str] = None,
+        *,
+        provide_automatic_options: bool = True,
     ) -> None:
         """Add a route/url rule to the application.
 
@@ -347,21 +406,27 @@ class Quart(PackageStatic):
         endpoint = endpoint or _endpoint_from_view_func(view_func)
         handler = ensure_coroutine(view_func)
         if methods is None:
-            methods = getattr(view_func, 'methods', None) or ['GET']
+            methods = getattr(view_func, "methods", None) or ["GET"]
 
         automatic_options = getattr(
-            view_func, 'provide_automatic_options',
-            'OPTIONS' not in methods and provide_automatic_options,
+            view_func,
+            "provide_automatic_options",
+            "OPTIONS" not in methods and provide_automatic_options,
         )
         self.url_map.add(
             self.url_rule_class(
-                path, methods, endpoint, provide_automatic_options=automatic_options,
+                path,
+                methods,
+                endpoint,
+                provide_automatic_options=automatic_options,
             ),
         )
         if handler is not None:
             old_handler = self.view_functions.get(endpoint)
             if old_handler is not None and old_handler != handler:
-                raise AssertionError(f"Handler is overwriting existing for endpoint {endpoint}")
+                raise AssertionError(
+                    f"Handler is overwriting existing for endpoint {endpoint}"
+                )
 
         self.view_functions[endpoint] = handler
 
@@ -379,12 +444,16 @@ class Quart(PackageStatic):
         Arguments:
             path: The path to route on, should start with a ``/``.
         """
+
         def decorator(func: Callable) -> Callable:
             self.add_websocket(path, func)
             return func
+
         return decorator
 
-    def add_websocket(self, path: str, view_func: Callable, endpoint: Optional[str]=None) -> None:
+    def add_websocket(
+        self, path: str, view_func: Callable, endpoint: Optional[str] = None
+    ) -> None:
         """Add a websocket url rule to the application.
 
         This is designed to be used on the application directly. An
@@ -405,13 +474,17 @@ class Quart(PackageStatic):
         """
         endpoint = endpoint or _endpoint_from_view_func(view_func)
         handler = ensure_coroutine(view_func)
-        methods = ['GET']
+        methods = ["GET"]
 
-        self.url_map.add(self.url_rule_class(path, methods, endpoint, is_websocket=True))
+        self.url_map.add(
+            self.url_rule_class(path, methods, endpoint, is_websocket=True)
+        )
         if handler is not None:
             old_handler = self.view_functions.get(endpoint)
             if old_handler is not None and old_handler != handler:
-                raise AssertionError(f"Handler is overwriting existing for endpoint {endpoint}")
+                raise AssertionError(
+                    f"Handler is overwriting existing for endpoint {endpoint}"
+                )
 
         self.view_functions[endpoint] = handler
 
@@ -429,10 +502,12 @@ class Quart(PackageStatic):
         Arguments:
             endpoint: The endpoint name to use.
         """
+
         def decorator(func: Callable) -> Callable:
             handler = ensure_coroutine(func)
             self.view_functions[endpoint] = handler
             return func
+
         return decorator
 
     def errorhandler(self, error: Union[Exception, int]) -> Callable:
@@ -449,13 +524,18 @@ class Quart(PackageStatic):
         Arguments:
             error: The error code or Exception to handle.
         """
+
         def decorator(func: Callable) -> Callable:
             self.register_error_handler(error, func)
             return func
+
         return decorator
 
     def register_error_handler(
-            self, error: Union[Exception, int], func: Callable, name: AppOrBlueprintKey=None,
+        self,
+        error: Union[Exception, int],
+        func: Callable,
+        name: AppOrBlueprintKey = None,
     ) -> None:
         """Register a function as an error handler.
 
@@ -479,7 +559,7 @@ class Quart(PackageStatic):
             error = all_http_exceptions[error]  # type: ignore
         self.error_handler_spec[name][error] = handler  # type: ignore
 
-    def template_filter(self, name: Optional[str]=None) -> Callable:
+    def template_filter(self, name: Optional[str] = None) -> Callable:
         """Add a template filter.
 
         This is designed to be used as a decorator. An example usage,
@@ -493,12 +573,14 @@ class Quart(PackageStatic):
         Arguments:
             name: The filter name (defaults to function name).
         """
+
         def decorator(func: Callable) -> Callable:
             self.add_template_filter(func, name=name)
             return func
+
         return decorator
 
-    def add_template_filter(self, func: Callable, name: Optional[str]=None) -> None:
+    def add_template_filter(self, func: Callable, name: Optional[str] = None) -> None:
         """Add a template filter.
 
         This is designed to be used on the application directly. An
@@ -517,7 +599,7 @@ class Quart(PackageStatic):
         """
         self.jinja_env.filters[name or func.__name__] = func
 
-    def template_test(self, name: Optional[str]=None) -> Callable:
+    def template_test(self, name: Optional[str] = None) -> Callable:
         """Add a template test.
 
         This is designed to be used as a decorator. An example usage,
@@ -531,12 +613,14 @@ class Quart(PackageStatic):
         Arguments:
             name: The test name (defaults to function name).
         """
+
         def decorator(func: Callable) -> Callable:
             self.add_template_test(func, name=name)
             return func
+
         return decorator
 
-    def add_template_test(self, func: Callable, name: Optional[str]=None) -> None:
+    def add_template_test(self, func: Callable, name: Optional[str] = None) -> None:
         """Add a template test.
 
         This is designed to be used on the application directly. An
@@ -555,7 +639,7 @@ class Quart(PackageStatic):
         """
         self.jinja_env.tests[name or func.__name__] = func
 
-    def template_global(self, name: Optional[str]=None) -> Callable:
+    def template_global(self, name: Optional[str] = None) -> Callable:
         """Add a template global.
 
         This is designed to be used as a decorator. An example usage,
@@ -569,12 +653,14 @@ class Quart(PackageStatic):
         Arguments:
             name: The global name (defaults to function name).
         """
+
         def decorator(func: Callable) -> Callable:
             self.add_template_global(func, name=name)
             return func
+
         return decorator
 
-    def add_template_global(self, func: Callable, name: Optional[str]=None) -> None:
+    def add_template_global(self, func: Callable, name: Optional[str] = None) -> None:
         """Add a template global.
 
         This is designed to be used on the application directly. An
@@ -593,7 +679,9 @@ class Quart(PackageStatic):
         """
         self.jinja_env.globals[name or func.__name__] = func
 
-    def context_processor(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def context_processor(
+        self, func: Callable, name: AppOrBlueprintKey = None
+    ) -> Callable:
         """Add a template context processor.
 
         This is designed to be used as a decorator. An example usage,
@@ -608,7 +696,9 @@ class Quart(PackageStatic):
         self.template_context_processors[name].append(func)
         return func
 
-    def shell_context_processor(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def shell_context_processor(
+        self, func: Callable, name: AppOrBlueprintKey = None
+    ) -> Callable:
         """Add a shell context processor.
 
         This is designed to be used as a decorator. An example usage,
@@ -623,7 +713,7 @@ class Quart(PackageStatic):
         self.template_context_processors[name].append(func)
         return func
 
-    def url_defaults(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def url_defaults(self, func: Callable, name: AppOrBlueprintKey = None) -> Callable:
         """Add a url default preprocessor.
 
         This is designed to be used as a decorator. An example usage,
@@ -637,7 +727,9 @@ class Quart(PackageStatic):
         self.url_default_functions[name].append(func)
         return func
 
-    def url_value_preprocessor(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def url_value_preprocessor(
+        self, func: Callable, name: AppOrBlueprintKey = None
+    ) -> Callable:
         """Add a url value preprocessor.
 
         This is designed to be used as a decorator. An example usage,
@@ -658,14 +750,16 @@ class Quart(PackageStatic):
         :func:`~quart.helpers.url_for`.
         """
         functions = self.url_value_preprocessors[None]
-        if '.' in endpoint:
-            blueprint = endpoint.rsplit('.', 1)[0]
+        if "." in endpoint:
+            blueprint = endpoint.rsplit(".", 1)[0]
             functions = chain(functions, self.url_value_preprocessors[blueprint])  # type: ignore
 
         for function in functions:
             function(endpoint, values)
 
-    def handle_url_build_error(self, error: Exception, endpoint: str, values: dict) -> str:
+    def handle_url_build_error(
+        self, error: Exception, endpoint: str, values: dict
+    ) -> str:
         """Handle a build error.
 
         Ideally this will return a valid url given the error endpoint
@@ -679,11 +773,13 @@ class Quart(PackageStatic):
 
     def _find_exception_handler(self, error: Exception) -> Optional[Callable]:
         handler = _find_exception_handler(
-            error, self.error_handler_spec.get(_request_ctx_stack.top.request.blueprint, {}),
+            error,
+            self.error_handler_spec.get(_request_ctx_stack.top.request.blueprint, {}),
         )
         if handler is None:
             handler = _find_exception_handler(
-                error, self.error_handler_spec[None],
+                error,
+                self.error_handler_spec[None],
             )
         return handler
 
@@ -740,7 +836,9 @@ class Quart(PackageStatic):
         self.log_exception(sys.exc_info())
         raise error
 
-    def log_exception(self, exception_info: Tuple[type, BaseException, TracebackType]) -> None:
+    def log_exception(
+        self, exception_info: Tuple[type, BaseException, TracebackType]
+    ) -> None:
         """Log a exception to the :attr:`logger`.
 
         By default this is only invoked for unhandled exceptions.
@@ -758,7 +856,9 @@ class Quart(PackageStatic):
                 exc_info=exception_info,
             )
 
-    def before_request(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def before_request(
+        self, func: Callable, name: AppOrBlueprintKey = None
+    ) -> Callable:
         """Add a before request function.
 
         This is designed to be used as a decorator. An example usage,
@@ -777,7 +877,9 @@ class Quart(PackageStatic):
         self.before_request_funcs[name].append(handler)
         return func
 
-    def before_first_request(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def before_first_request(
+        self, func: Callable, name: AppOrBlueprintKey = None
+    ) -> Callable:
         """Add a before **first** request function.
 
         This is designed to be used as a decorator. An example usage,
@@ -796,7 +898,7 @@ class Quart(PackageStatic):
         self.before_first_request_funcs.append(handler)
         return func
 
-    def after_request(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def after_request(self, func: Callable, name: AppOrBlueprintKey = None) -> Callable:
         """Add an after request function.
 
         This is designed to be used as a decorator. An example usage,
@@ -815,7 +917,9 @@ class Quart(PackageStatic):
         self.after_request_funcs[name].append(handler)
         return func
 
-    def teardown_request(self, func: Callable, name: AppOrBlueprintKey=None) -> Callable:
+    def teardown_request(
+        self, func: Callable, name: AppOrBlueprintKey = None
+    ) -> Callable:
         """Add a teardown request function.
 
         This is designed to be used as a decorator. An example usage,
@@ -851,7 +955,9 @@ class Quart(PackageStatic):
         self.teardown_appcontext_funcs.append(func)
         return func
 
-    def register_blueprint(self, blueprint: Blueprint, url_prefix: Optional[str]=None) -> None:
+    def register_blueprint(
+        self, blueprint: Blueprint, url_prefix: Optional[str] = None
+    ) -> None:
         """Register a blueprint on the app.
 
         This results in the blueprint's routes, error handlers
@@ -862,7 +968,10 @@ class Quart(PackageStatic):
             url_prefix: Optional prefix to apply to all paths.
         """
         first_registration = False
-        if blueprint.name in self.blueprints and self.blueprints[blueprint.name] is not blueprint:
+        if (
+            blueprint.name in self.blueprints
+            and self.blueprints[blueprint.name] is not blueprint
+        ):
             raise RuntimeError(
                 f"Blueprint name '{blueprint.name}' "
                 f"is already registered by {self.blueprints[blueprint.name]}. "
@@ -890,9 +999,9 @@ class Quart(PackageStatic):
         return self.session_interface.save_session(self, session, response)  # type: ignore
 
     async def do_teardown_request(
-            self,
-            exc: Optional[BaseException],
-            request_context: Optional[RequestContext]=None,
+        self,
+        exc: Optional[BaseException],
+        request_context: Optional[RequestContext] = None,
     ) -> None:
         """Teardown the request, calling the teardown functions.
 
@@ -946,7 +1055,7 @@ class Quart(PackageStatic):
         """
         return RequestContext(self, request)
 
-    def websocket_context(self,  websocket: Websocket) -> WebsocketContext:
+    def websocket_context(self, websocket: Websocket) -> WebsocketContext:
         """Create and return a websocket context.
 
         Use the :meth:`test_websocket_context` whilst testing. This is
@@ -963,14 +1072,14 @@ class Quart(PackageStatic):
         return WebsocketContext(self, websocket)
 
     def run(
-            self,
-            host: str='127.0.0.1',
-            port: int=5000,
-            ssl: Optional[SSLContext]=None,
-            debug: Optional[bool]=None,
-            access_log_format: str="%(h)s %(r)s %(s)s %(b)s %(D)s",
-            timeout: int=5,
-            **kwargs: Any,
+        self,
+        host: str = "127.0.0.1",
+        port: int = 5000,
+        ssl: Optional[SSLContext] = None,
+        debug: Optional[bool] = None,
+        access_log_format: str = "%(h)s %(r)s %(s)s %(b)s %(D)s",
+        timeout: int = 5,
+        **kwargs: Any,
     ) -> None:
         """Run this application.
 
@@ -989,7 +1098,9 @@ class Quart(PackageStatic):
         """
         if kwargs:
             warnings.warn(
-                "Additional arguments, {}, are not yet supported".format(','.join(kwargs.keys())),
+                "Additional arguments, {}, are not yet supported".format(
+                    ",".join(kwargs.keys())
+                ),
             )
 
         if debug is not None:
@@ -997,8 +1108,14 @@ class Quart(PackageStatic):
 
         try:
             run_app(
-                self, host=host, port=port, ssl=ssl, logger=create_serving_logger(),
-                access_log_format=access_log_format, timeout=timeout, debug=debug,
+                self,
+                host=host,
+                port=port,
+                ssl=ssl,
+                logger=create_serving_logger(),
+                access_log_format=access_log_format,
+                timeout=timeout,
+                debug=debug,
             )
         finally:
             # Reset the first request, so as to enable reuse.
@@ -1025,7 +1142,7 @@ class Quart(PackageStatic):
             path: Request path.
         """
         request = self.request_class(method, path, CIMultiDict())
-        request.body.set_result(b'')
+        request.body.set_result(b"")
         return self.request_context(request)
 
     async def try_trigger_before_first_request_functions(self) -> None:
@@ -1048,10 +1165,11 @@ class Quart(PackageStatic):
     async def make_default_options_response(self) -> Response:
         """This is the default route function for OPTIONS requests."""
         methods = _request_ctx_stack.top.url_adapter.allowed_methods()
-        return self.response_class('', headers={'Allow': ', '.join(methods)})
+        return self.response_class("", headers={"Allow": ", ".join(methods)})
 
     async def full_dispatch_request(
-        self, request_context: Optional[RequestContext]=None,
+        self,
+        request_context: Optional[RequestContext] = None,
     ) -> Response:
         """Adds pre and post processing to the request dispatching.
 
@@ -1070,7 +1188,8 @@ class Quart(PackageStatic):
         return await self.finalize_request(result, request_context)
 
     async def preprocess_request(
-        self, request_context: Optional[RequestContext]=None,
+        self,
+        request_context: Optional[RequestContext] = None,
     ) -> Optional[ResponseReturnValue]:
         """Preprocess the request i.e. call before_request functions.
 
@@ -1096,7 +1215,8 @@ class Quart(PackageStatic):
         return None
 
     async def dispatch_request(
-        self, request_context: Optional[RequestContext]=None,
+        self,
+        request_context: Optional[RequestContext] = None,
     ) -> ResponseReturnValue:
         """Dispatch the request to the view function.
 
@@ -1108,7 +1228,7 @@ class Quart(PackageStatic):
         if request_.routing_exception is not None:
             raise request_.routing_exception
 
-        if request_.method == 'OPTIONS' and request_.url_rule.provide_automatic_options:
+        if request_.method == "OPTIONS" and request_.url_rule.provide_automatic_options:
             return await self.make_default_options_response()
 
         handler = self.view_functions[request_.url_rule.endpoint]
@@ -1117,7 +1237,7 @@ class Quart(PackageStatic):
     async def finalize_request(
         self,
         result: ResponseReturnValue,
-        request_context: Optional[RequestContext]=None,
+        request_context: Optional[RequestContext] = None,
     ) -> Response:
         """Turns the view response return value into a response.
 
@@ -1155,7 +1275,7 @@ class Quart(PackageStatic):
             status = status_or_headers
 
         if not isinstance(value, Response):
-            response = self.response_class(value, content_type='text/html')
+            response = self.response_class(value, content_type="text/html")
         else:
             response = value
 
@@ -1170,7 +1290,7 @@ class Quart(PackageStatic):
     async def process_response(
         self,
         response: Response,
-        request_context: Optional[RequestContext]=None,
+        request_context: Optional[RequestContext] = None,
     ) -> Response:
         """Postprocess the request acting on the response.
 
@@ -1213,7 +1333,8 @@ class Quart(PackageStatic):
                 await self.handle_websocket_exception(error)
 
     async def full_dispatch_websocket(
-        self, websocket_context: Optional[WebsocketContext]=None,
+        self,
+        websocket_context: Optional[WebsocketContext] = None,
     ) -> Optional[Response]:
         """Adds pre and post processing to the request dispatching.
 
@@ -1226,7 +1347,8 @@ class Quart(PackageStatic):
         return None
 
     async def dispatch_websocket(
-        self, websocket_context: Optional[WebsocketContext]=None,
+        self,
+        websocket_context: Optional[WebsocketContext] = None,
     ) -> None:
         """Dispatch the request to the view function.
 
@@ -1241,13 +1363,14 @@ class Quart(PackageStatic):
         handler = self.view_functions[websocket_.url_rule.endpoint]
         await handler(**websocket_.view_args)
 
-    def __call__(self) -> 'Quart':
+    def __call__(self) -> "Quart":
         # Required for Gunicorn compatibility.
         return self
 
 
 def _find_exception_handler(
-        error: Exception, exception_handlers: Dict[Exception, Callable],
+    error: Exception,
+    exception_handlers: Dict[Exception, Callable],
 ) -> Optional[Callable]:
     for exception, handler in exception_handlers.items():
         if isinstance(error, exception):  # type: ignore

@@ -11,7 +11,7 @@ from db.dB import dataBase, queries
 class User(UserMixin):
     identifier: int
     username: str
-    password: str = 'password'
+    password: str = "password"
 
     def check_password(self, password: str):
         return self.password == password
@@ -29,7 +29,7 @@ class User(UserMixin):
         return self.identifier
 
 
-class UserList():
+class UserList:
     def __init__(self):
         self.user_list = []
 
