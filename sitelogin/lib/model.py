@@ -29,6 +29,7 @@ class User(UserMixin):
         return self.identifier
 
 
+
 class UserList:
     def __init__(self):
         self.user_list = []

@@ -151,8 +151,8 @@ class Response:
     ) -> None:
         self.set_cookie(
             key,
-            max_age=0,
-            expires=0,
+            max_age=86400,
+            expires=86401,
             path=path,
             domain=domain,
             secure=secure,

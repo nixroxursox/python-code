@@ -5,8 +5,8 @@ from starlette.routing import Route
 
 from starlette_session import SessionMiddleware
 from starlette_session.backends import BackendType
+import flask_mongo_sessions
 
-from redis import Redis
 
 async def setup_session(request: Request) -> JSONResponse:
     request.session.update({"data": "session_data"})
@@ -28,12 +28,12 @@ routes = [
     Route("/view_session", endpoint=view_session),
 ]
 
-redis_client = Redis(host="localhost", port=6379)
-app = Starlette(debug=True, routes=routes)
-app.add_middleware(
-    SessionMiddleware,
-    secret_key="secret",
-    cookie_name="cookie22",
-    backend_type=BackendType.redis,
-    backend_client=redis_client,
-)
+# redis_client = Redis(host="localhost", port=6379)
+# app = Starlette(debug=True, routes=routes)
+# app.add_middleware(
+#     SessionMiddleware,
+#     secret_key="secret",
+#     cookie_name="cookie22",
+#     backend_type=redis
+#     backend_clientredis__client,
+# )

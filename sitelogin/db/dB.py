@@ -5,6 +5,8 @@ from pymongo.errors import PyMongoError
 from nacl import pwhash, utils, exceptions
 from decouple import config
 from test.test_userdict import UserDictTest
+import nacl
+from nacl import pwhash
 
 # Configuration from environment variables or '.env' file.
 
@@ -17,9 +19,9 @@ dbwUri = config("dbwUri")
 
 
 class dataBase:
-    def __init__(self, col):
+    def __init__(self, db, col):
         self.db = "locker"
-        self.col = col
+        self.col = "luser"
 
     def Config(method):
         authSource = "locker"
@@ -43,36 +45,33 @@ class dataBase:
         )
         db = client[dbObj]
         return db
+    def connX509(self):
+        client = MongoClient('example.com',
+                     authMechanism="MONGODB-X509",
+                     tls=True,
+                     tlsCertificateKeyFile='/path/to/client.pem',
+                     tlsCAFile='/path/to/ca.pem')
+        db = client["locker"]
+        return db
 
-    # def readDb(col):
-    #     try:
-    #         client = dataBase.Config("read")
-    #         rcol = client[col]
-    #         return rcol
-    #     except PyMongoError as e:
-    #         print(e)
-
-    # def writeDb(col):
-    #     try:
-    #         client = dataBase.Config("write")
-    #         rcol = client[col]
-    #         return rcol
-    #     except PyMongoError as e:
-    #         print(e)
-
-    def find(dbDict):
-        try:
-            un = dbDict["username"]
-            pw = dbDict["password"]
-            dbp = dbDict["pinCode"]
-            dbr = dataBase.Config("read")
-            rcol = dbr["luser"]
-            try:
-                un1, pw1, dbp1 = rcol.find_one({userId}, queries.getUserCreds())
-                if un == un1 and pw == pw1 and dbp == dbp1:
-                    return True
-                else:
-                    return False
+    # def checkPass(dbDict):
+    #     if dataBase.findUser == True:
+    #         try:
+    #             dbr = dataBase.Config("read")
+    #             rcol = dbr["luser"]
+    #             pw = dbDict["password"]
+    #             dbp = dbDict["pinCode"]
+    #             password = rcol.find({},{'_id': 0, 'userId': 1, 'password': 1, 'pin_code': 1})
+    #             check = pwhash.verify(password[2], pw)
+    #             checkPin = pwhash.verify(password[3], dbp)
+    #             if check == True and checkPin == True:
+    #                 return True
+    #             else:
+    #                 return False             
+    #         except Exception as e:
+    #             return e
+    #     else:
+    #         return False
             #         if dbDict[fuserId] == fuserId:
             #             if pwhash.str(fpasswd, chkUser[password]) == True:
             #                 if pwhash.str(pin_code, chkUser[pin_code]) == True:
@@ -82,11 +81,6 @@ class dataBase:
             #             else:
             #                 return Fals
             #         return True
-            except PyMongoError as e:
-                print(e)
-        except PyMongoError as e:
-            print(e)
-        #     print(e)
 
     def findAllUsers():
         try:
@@ -123,8 +117,8 @@ class dataBase:
                 return True
             else:
                 return False
-        except Exception as e:
-            print("An exception occurred :", e)
+        except Exception as err:
+            print("An exception occurred :", err)
             return False
 
     def modUser(chkUser, appPass, newAppPass, pin, newPin):
@@ -144,7 +138,7 @@ class dataBase:
 
 
 class queries:
-    def __init__():
+    def __init__(self, query, user):
         self.query = None
         self.user = None
 

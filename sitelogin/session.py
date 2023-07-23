@@ -2,9 +2,7 @@ from contextlib import contextmanager
 from http.cookies import SimpleCookie
 from sys import version_info
 from typing import Generator
-
 from quart.app import Quart
-from quart.datastructures import CIMultiDict
 from quart.sessions import (
     NullSession,
     SecureCookieSession,
@@ -71,7 +69,7 @@ async def secure_cookie_session_interface_open_session() -> None:
     response = Response("")
     await interface.save_session(app, session, response)
     request = Request(
-        "GET", "http", "/", b"", CIMultiDict(), "", "1.1", send_push_promise=no_op_push
+        "GET", "http", "/", b"", "", "1.1", send_push_promise=no_op_push
     )
     request.headers["Cookie"] = response.headers["Set-Cookie"]
     new_session = await interface.open_session(app, request)

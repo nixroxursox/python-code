@@ -2,11 +2,10 @@ from urllib.parse import parse_qsl
 
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, HTMLResponse, PlainTextResponse
-from user import userList
+from user import User, userList
 from starlette_login.decorator import login_required
 from starlette_login.utils import login_user, logout_user
 
-from lib.model import user_list
 
 
 HOME_PAGE = "You are logged in as {{ user.username }}"
@@ -56,5 +55,10 @@ async def home_page(request: Request):
 
 
 @login_required
-async def protected_page(request: Request):
-    return PlainTextResponse(f"You are logged in as {request.user.username}")
+async def admin_page(request: Request):
+    if request.user.isAdmin:
+        content = f"You are logged in as {request.user.username}"
+    else:
+        content = f"You are not an Administrator"
+    return PlainTextResponse(content=content)
+

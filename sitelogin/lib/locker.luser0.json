@@ -1,0 +1,172 @@
+[{
+  "_id": {
+    "$oid": "64921a6ce340b420bf67e27e"
+  },
+  "images": {
+    "thumbnail_url": "ks nfl",
+    "medium_url": "nruls",
+    "picture_url": "https://a0.muscache.com/im/pictures/e83e702f-ef49-40fb-8fa0-6512d7e26e9b.jpg?aki_policy=large",
+    "xl_picture_url": "lslsls"
+  },
+  "rating": "blahblah",
+  "lastLogin": {
+    "$timestamp": {
+      "t": 0,
+      "i": 0
+    }
+  },
+  "first_review": {
+    "$date": "2016-01-03T05:00:00.000Z"
+  },
+  "last_review": {
+    "$timestamp": {
+      "t": 0,
+      "i": 0
+    }
+  },
+  "number_of_reviews": 51,
+  "review_scores": {
+    "review_scores_accuracy": 9,
+    "review_scores_cleanliness": 9,
+    "review_scores_checkin": 10,
+    "review_scores_communication": 10,
+    "review_scores_location": 10,
+    "review_scores_value": 9,
+    "review_scores_rating": 89
+  },
+  "reviews": [
+    {
+      "_id": "362865132",
+      "date": {
+        "$date": "2018-12-27T05:00:00.000Z"
+      },
+      "listing_id": "10006546",
+      "reviewer_id": "208880077",
+      "reviewer_name": "Thomas",
+      "comments": "Very helpful hosts. Cooked traditional..."
+    },
+    {
+      "_id": "364728730",
+      "date": {
+        "$date": "2018-12-31T05:00:00.000Z"
+      },
+      "listing_id": "10006546",
+      "reviewer_id": "91827533",
+      "reviewer_name": "Mr",
+      "comments": "Ana & Goncalo were great on communication..."
+    },
+    {
+      "_id": "403055315",
+      "date": {
+        "$date": "2019-01-20T05:00:00.000Z"
+      },
+      "listing_id": "10006546",
+      "reviewer_id": "15138940",
+      "reviewer_name": "Milo",
+      "comments": "The house was extremely well located..."
+    }
+  ],
+  "pgpKey": "nnnnn",
+  "userId": "rjallen",
+  "nickName": "string",
+  "password": "string",
+  "pinCode": 0,
+  "masterId": 99999999,
+  "personalStateMent": "bblah"
+},
+{
+  "_id": {
+    "$oid": "64921a97831def4999771003"
+  },
+  "userId": "rallen1",
+  "username": "mynickName",
+  "password": "b'$argon2id$v=19$m=65536,t=2,p=1$UKPO6cyt9tyFWfBUKLqmYg$QH2yQrzzzquWyLHNwmgdfulW3gfhrylbbA94G+x1Dwk'",
+  "pin_code": "b'$argon2id$v=19$m=65536,t=2,p=1$nsO4KW7E2+IAlJ8bgacaRg$Gv5JxI0/yf8Oc95XsKyUsi4zOxy8teBa6ZzP+2RC7NI'"
+},
+{
+  "_id": {
+    "$oid": "64bc4443c59406990cb429c1"
+  }
+},
+{
+  "_id": {
+    "$oid": "64bc444f67231cbab54a1b13"
+  }
+},
+{
+  "_id": {
+    "$oid": "64bc507b65e00a704d498ed2"
+  },
+  "rating": "blahblah",
+  "lastLogin": {
+    "$timestamp": {
+      "t": 0,
+      "i": 0
+    },
+    "pgpKey": "nnnnn",
+    "userId": "rjallen",
+    "nickName": "string",
+    "password": "string",
+    "pinCode": 0,
+    "masterId": 99999999,
+    "pin_code": 202020202,
+    "personalStateMent": "bblah"
+  },
+  "first_review": {
+    "$date": "2016-01-03T05:00:00.000Z"
+  },
+  "last_review": {
+    "$timestamp": {
+      "t": 0,
+      "i": 0
+    }
+  },
+  "number_of_reviews": 51,
+  "review_scores": {
+    "review_scores_accuracy": 9,
+    "review_scores_cleanliness": 9,
+    "review_scores_checkin": 10,
+    "review_scores_communication": 10,
+    "review_scores_location": 10,
+    "review_scores_value": 9,
+    "review_scores_rating": 89
+  },
+  "reviews": [
+    {
+      "_id": "362865132",
+      "date": {
+        "$date": "2018-12-27T05:00:00.000Z"
+      },
+      "listing_id": "10006546",
+      "reviewer_id": "208880077",
+      "reviewer_name": "Thomas",
+      "comments": "Very helpful hosts. Cooked traditional..."
+    },
+    {
+      "_id": "364728730",
+      "date": {
+        "$date": "2018-12-31T05:00:00.000Z"
+      },
+      "listing_id": "10006546",
+      "reviewer_id": "91827533",
+      "reviewer_name": "Mr",
+      "comments": "Ana & Goncalo were great on communication..."
+    },
+    {
+      "_id": "403055315",
+      "date": {
+        "$date": "2019-01-20T05:00:00.000Z"
+      },
+      "listing_id": "10006546",
+      "reviewer_id": "15138940",
+      "reviewer_name": "Milo",
+      "comments": "The house was extremely well located..."
+    }
+  ],
+  "images": {
+    "thumbnail_url": "ks nfl",
+    "medium_url": "nruls",
+    "picture_url": "https://a0.muscache.com/im/pictures/e83e702f-ef49-40fb-8fa0-6512d7e26e9b.jpg?aki_policy=large",
+    "xl_picture_url": "lslsls"
+  }
+}]

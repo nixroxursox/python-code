@@ -18,11 +18,14 @@ from starlette_login.login_manager import LoginManager
 from starlette_login.middleware import AuthenticationMiddleware
 import lib.logging as logging
 from user import userList
-from cookie import Session
+import lib.session as session
 import lib.routes as routes
 import lib.requests as requests
 import lib.responses as responses
-from lib.routes import home_page, login_page, logout_page, protected_page
+from lib.routes import login_page, home_page, admin_page, logout_page
+import lib.model as model
+import lib.backends
+import register
 from starlette.templating import Jinja2Templates
 
 sk = config("SECRET_KEY")
@@ -40,22 +43,24 @@ login_manager = LoginManager(redirect_to="login", secret_key=sk)
 template = Jinja2Templates(directory="templates")
 
 app = Starlette(
+    debug=True,
+    routes=[
+        Route('/', home_page, name='home'),
+        Route('/login', login_page, methods=['GET', 'POST'], name='login'),
+        Route('/logout', logout_page, methods=['GET', 'POST'], name='logout'),
+        Route('/admin', admin_page),
+        Route('/register', register, methods=['GET','POST'], name='register')
+    ],
     middleware=[
         Middleware(SessionMiddleware, secret_key=sk),
         Middleware(
             AuthenticationMiddleware,
             backend=SessionAuthBackend(login_manager),
             login_manager=login_manager,
-            # login_route='login',
-            allow_websocket=False,
-        ),
-    ],
-    routes=[
-        Route("/", home_page, name="home"),
-        Route("/login", login_page, methods=["GET", "POST"], name="login"),
-        Route("/logout", logout_page, name="logout"),
-        Route("/protected", protected_page, name="protected"),
-    ],
+            login_route='login',
+            excluded_dirs=['/favicon.ico']
+        )
+    ]
 )
 app.state.login_manager = login_manager
 
@@ -70,13 +75,14 @@ templates = Jinja2Templates(directory="templates", autoescape=False, auto_reload
 #     Route("/", endpoint=homepage),
 #     Route("/login", methods=["GET", "POST"], endpoint="login")
 # ]
-
+ 
 # def startup():
 #     db = dataBase.Config("read")
 #     rdb = db["luser"]
-
+ 
 
 # app = Starlette(debug=True, on_startup=[startup], routes=routes)
+
 
 async def login(request):
     if request.method == 'GET':
@@ -88,7 +94,8 @@ async def login(request):
 
 if __name__ == "__main__":
     config = uvicorn.Config(
-        "main:app", port=8000, log_level="debug", uds="/tmp/starlette.sock"
+        "main:app", log_level="debug", uds="/tmp/starlette.sock", reload=True
     )
     server = uvicorn.Server(config)
     server.run()
+
