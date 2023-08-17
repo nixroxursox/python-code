@@ -4,13 +4,11 @@
         value}}" size="{{ size }}">
 {%- endmacro %}
 
-{% block title %}Login{% endblock %}
-{% block head %}
-    {{ super() }}
+{% block title %}Login{% endblock title %}
+{% block head %}{{ super() }}{% endblock head %}
 
-{% endblock %}
 
-{% block content %}
+
 <div>
 {% include 'nav.html' %}
 </div>
@@ -33,4 +31,3 @@
    <p> {{ data }}</p>
   </div>
 </div>
-{% endblock %}

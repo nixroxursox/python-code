@@ -1,113 +1,68 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
-<head>
-    {% block head %}
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="Sysadmin">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <!-- Bootstrap core CSS -->
-        <link href="/fa/css/w3.css" rel="stylesheet">
+    <title>Jumbotron Template for Bootstrap</title>
 
-        <!-- Custom styles for this template -->
-        <link href="./static/jumbotron.css" rel="stylesheet">
-   <title>{% block title %} - The Ring{% endblock %}</title>
-    {% endblock %}
-    <meta charset="UTF-8">
- 
-    <script>
-    </script>
-</head>
-<style>
-    .message {
-        color: white;
-        padding: 4px;
-        margin: 4px;
-    }
-    .message-info {
-        background-color: darkgreen;
-    }
-    .message-error {
-        background-color: darkred;
-    }
-    .message-warning {
-        background-color: #b0b000;
-    }
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('style', path='/style/fa/css/bootstrap.min.css') }}" rel="stylesheet">
 
-    .login-label {
-        display: inline-block;
-        width: 200px;
-    }
-    .login-form {
-        width: 440px;
-        margin-left: auto;
-        margin-right: auto
-    }
-    .login-form input {
-        width: 200px
-    }
-    .login-buttons {
-        margin-top: 8px;
-        text-align: center;
-    }
-    .login-buttons button {
-        margin-left: 8px;
-        margin-right: 8px;
-        border: 0;
-        padding: 8px;
-        border-radius: 4px;
-    }
-    .login-buttons button[type=reset] {
-        background-color: #a04040;
-        color: white;
-    }
-    .login-buttons button[type=submit] {
-        background-color: #40a040;
-        color: white;
-    }
-</style>
-<body class="w3-light-grey ">
-    <div id="content" class=w3-top">
-        {% block content %}
-            {% include 'nav.html' %}
-        {% endblock %}</div>
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', path='/jumbotron.css') }}" rel="stylesheet">
+  </head>
 
-    <div id="footer" class="w3-bottom w3-align-right">
-        {% block footer %}
-        &copy; Copyright 2022 by <a href="http://localhost:5555/">you</a>.
-        {% endblock %}
-    </div>
-</body>
-<h1>{{ self.title }}</h1>
+  <body>
 
-<div>
-    <a href="{{ request.url_for('home') }}">Home</a>
-</div>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-<div id="messages">
-{% if 'messages' in request.session %}
-    {% for msg in request.session.pop('messages') %}
-        <div class="message message-{{ msg.severity }}">{{ msg.message }}</div>
-    {% endfor %}
-{% endif %}
-</div>
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
 
-{%- block content %}{% endblock -%}
+    {% block content %}{% endblock %}
 
-<!-- this is nice for debugging -->
-<footer>
-    <div>User: {{ request.session['user'] }}<br>
-        Name: {{ request.user.identity }}<br>
-        Scopes: {{ request.auth.scopes }}<br>
-    </div>
-    <div>
-        complete url: <span id="loc"></span>
-        <script>document.getElementById('loc').innerHTML = window.location.href</script>
-    </div>
-</footer>
+    <footer class="container">
+      <p>&copy; Company 2017-2018</p>
+    </footer>
 
-</body>
-</html>
+    <!-- Bootstrap core JavaScript
+    ================================================== 
+    Placed at the end of the document so the pages load faster 
+     <script src="{{ url_for('static', path='/js/jquery-3.3.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/bootstrap.min.js') }}"></script>
+    -->
+  </body>
 </html>

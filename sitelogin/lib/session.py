@@ -1,11 +1,13 @@
+from decouple import config
+
+# from redis import Redis
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.routing import Route
-
 from starlette_session import SessionMiddleware
 from starlette_session.backends import BackendType
-import flask_mongo_sessions
+
+sk = config("SESS_SECRET_KEY")
 
 
 async def setup_session(request: Request) -> JSONResponse:
@@ -22,18 +24,12 @@ def view_session(request: Request) -> JSONResponse:
     return JSONResponse({"session": request.session})
 
 
-routes = [
-    Route("/setup_session", endpoint=setup_session),
-    Route("/clear_session", endpoint=clear_session),
-    Route("/view_session", endpoint=view_session),
-]
-
 # redis_client = Redis(host="localhost", port=6379)
-# app = Starlette(debug=True, routes=routes)
-# app.add_middleware(
-#     SessionMiddleware,
-#     secret_key="secret",
-#     cookie_name="cookie22",
-#     backend_type=redis
-#     backend_clientredis__client,
-# )
+# # app = Starlette(debug=True, routes=routes)
+# # app.add_middleware(
+# #     SessionMiddleware,
+# #     secret_key=sk,
+# #     cookie_name="cookie22",
+# #     backend_type=redis
+# #     backend_clientredis__client,
+# # )

@@ -1,101 +1,123 @@
+import typing
+from dataclasses import dataclass
+from datetime import datetime, timezone
+
 import nacl
-from nacl import pwhash, utils, encoding
-from db.dB import dataBase
-from nacl import pwhash, utils, encoding
+from nacl import encoding, pwhash, utils
 from pymongo.errors import PyMongoError
+from starlette.requests import Request
+from db.dB import dataBase
 
 
 class User:
+    """user class for authentication"""
+
     def __init__(self, *args, **kwargs):
-        identifier: int
-        username: str
-        password: str
-        self.id: int
-        self.is_admin: bool
+        self.masterId: int
+        self.userName: str
+        self.password: str
+        self.nickName: str
+        self.isAdmin: bool
         self.user_exists: bool
 
-    def find(self, username):
-        """ find existing user by username"""
+    def find(self, userName, *args, **kwargs) -> False:
+        """find existing user by userName"""
         rdb = dataBase.Config("read")
-        db = rdb["luser"]
-        un = username
-        try:
-            uu = db.find_one({"userId": un})
-            if uu:
-                return True
-            else:
-                return False
-        except PyMongoError as err:
-            return err
+        db = rdb["userData"]
+        un = userName
+        query = {"loginData.userId": {"$eq": un}}
+        if db.find_one(query):
+            return True
+        return False
 
-    def create(self, *args, **kwargs):
-        rdb = dataBase.Config("write")
-        db = rdb["luser"]
-        un = userId
+    def create(self, userName, password, pinCode, nickName, *args, **kwargs):
+        wdb = dataBase.Config("write")
+        db = wdb["userData"]
+        un = userName
         pw = password
-        pc = pinCode
+        pin = pinCode
         nn = nickName
-        pgp = pgpKey
-        ia = isAdmin
-        try:
-            if self.find(un) is False:
-                result = db.insert_one({}, {"userId": un, "password": pw, "isAdmin": ia,
-                                       "pinCode": pc, "nickName": nn, "pgpKey": pgp})
-                return result.inserted_id
-            else:
-                state = "user ID is taken"
-                return state
-        except PyMongoError as err:
-            return err
+        uu = User()
+        uc = uu.get_userId(un)
+        if uc is True:
+            pw = password
+            pin = pinCode
+            pin0 = pwhash.argon2id.str(pin.encode("UTF-8"))
+            pw0 = pwhash.scryptsalsa208sha256_str(pw.encode("utf8"))
+            nn = nickName
+            isAdmin = False
+            msc = datetime.now(tz=timezone.utc)
+            try:
+                print("userId is available,... creating account")
+                result = db.insert_one(
+                    {
+                        "loginData": {
+                            "userId": un,
+                            "password": pw0,
+                            "pinCode": pin0,
+                            "nickName": nn,
+                            "isAdmin": isAdmin,
+                            "masterId": "100001",
+                            "memberSince": msc,
+                        }
+                    }
+                )
+                if result.acknowledged:
+                    context = "User created!"
+                    return context
+            except PyMongoError as err:
+                context = err
+                return context
+        else:
+            context = "user not created"
+            return uc
 
-    def checkPass(self, username, password):
-        un = username
-        rdb = dataBase.Config("read")
-        db = rdb["luser"]
-        pp = {}
-        pp = db.find_one({"userId": un})
+    def checkPass(self, userName, password) -> False:
+        """ check user pass - return true if match """
+        un = userName
         pw = password
-        try:
-            cpw = pp["password"]
-            print(cpw)
-            authenticated = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str_verify(
-                cpw, pw.encode('UTF-8'))
-            if authenticated is True:
-                return True
-            else:
-                return False
-        except PyMongoError as err:
-            return err
+        e = {}
+        e = self.getCreds(un)
+        e2 = e["loginData"]
+        pp = e2["password"]
+        cp = pwhash.verify_scryptsalsa208sha256(pp, pw.encode("UTF-8"))
+        if cp is True:
+            return True
+        return False
 
-    def checkPin(self, username, pin_code):
-        un = username
-        pin = pin_code
-        rdb = dataBase.Config("read")
-        db = rdb["luser"]
-        pi = {}
-        pi = db.find_one({"userId": un})
-        pc = pi["pin_code"]
-        try:
-            if pc is True:
-                return pc
-        except PyMongoError as err:
-            return err
+    def checkPin(self, userName, pinCode) -> False:
+        """ check user pin - return true if match """
+        un = userName
+        pi = pinCode
+        e = {}
+        e = self.getCreds(un)
+        e2 = e["loginData"]
+        pp = e2["pinCode"]
+        cp = pwhash.argon2id.verify(pp, pw.encode("UTF-8"))
+        if cp is True:
+            return True
+        return False
 
-    def isAdmin(self, username):
-        rdb = dataBase.Config("read")
-        db = rdb["luser"]
-        a = {}
-        try:
-            a = db.find_one({"userId": username})
-            if a["isAdmin"] == True:
-                return True
-            else:
-                return False
-        except PyMongoError as err:
-            return err
+    def isAdmin(self, userName, isAdmin) -> False:
+        """ checks whether user is admin """
+        un = userName
+        ia = isAdmin
+        e = {}
+        e = self.getCreds(un)
+        e2 = e["loginData"]
+        pp = e2["pinCode"]
+        cp = pwhash.argon2id.verify(pp, pw.encode("UTF-8"))
+        if cp is True:
+            return True
+        return False
 
     @property
-    def is_authenticated(self) -> bool:
+    def is_authenticated(self, userName) -> bool:
+        un = userName
+        if self.find(un) is True:
+            if self.checkPass(un) is True:
+                if self.checkPin(un) is True:
+                    return True
         return False
 
     @property
@@ -104,23 +126,100 @@ class User:
 
     @property
     def identity(self) -> int:
-        return self.identifier
+        return self.masterId
+
+    def get_userId(self, userName):
+        un = userName
+        query = {"loginData.userId": {"$eq": un}}
+        rdb = dataBase.Config("read")
+        db = rdb["userData"]
+        e = db.find_one(query)
+        if e is None:
+            context = "User ID is not yet in use"
+            uc = True
+            return uc
+        context = "User ID exists.  Please choose another"
+        uc = False
+        return uc
+
+    def getCreds(self, userName):
+        un = userName
+        e = {}
+        query = {"loginData.userId": {"$eq": un}}
+        rdb = dataBase.Config("read")
+        db = rdb["userData"]
+        e = db.find_one(query)
+        if e is None:
+            context = "Cannot find user info"
+            uc = false
+            return uc
+        context = ""
+        uc = True
+        return e
 
 
 class userList:
-    def __init__():
-        dbUser = None
+    def __init__(self):
+        self.userName: str
 
-    def user_loader(username):
-        fUser = username
-        db = dataBase.Config("read")
-        rdb = db["luser"]
-        users = rdb.find({"userId": fUser})
-        print(fUser)
-        return users
+    def user_loader(self, userName):
+        un = userName
+        User.find(un)
+        User.checkPass(un)
+        User.checkPin(un)
+        return True
 
     def usersAll():
         db = dataBase.Config("read")
-        rdb = db["luser"]
-        usersAll = rdb.find({}, {"_id": 0, "userId": 1})
+        rdb = db["userData"]
+        usersAll = rdb.find({}, {"_id": 0, "loginData.userId": 1})
         return usersAll
+
+    def dict_username(self) -> dict:
+        d = {}
+        for user in self.user_list:
+            d[user.userName] = user
+        return d
+
+    def dict_id(self) -> dict:
+        d = {}
+        for user in self.user_list:
+            d[user.identity] = user
+        return d
+
+    def add(self, user: User) -> bool:
+        if user.identity in self.dict_id():
+            return False
+        self.user_list.append(user)
+        return True
+
+    def get_by_username(self, userName: str) -> typing.Optional[User]:
+        self.userName = userName
+        rdb = dataBase.Config("read")
+        db = rdb["userData"]
+        query = {"loginData.userId": {"$eq": userName}}
+        userName = db.find_one(query)
+        return userName
+
+    def get_by_id(self, identifier: int) -> typing.Optional[User]:
+        return self.dict_id().get(identifier)
+
+    def user_loader(self, request: Request, userName: str):
+        un = userName
+        return self.find(un)
+
+
+#      db.counters.insert({
+# 	"loginData.masterId":"loginData.masterId",
+# 	"sequence_value": 10000001
+# })
+# WriteResult({ "nInserted" : 1 })
+
+# function getNextSequenceValue(nextSeq){
+#    var sequenceDocument = db.counters.findAndModify({
+#       query:{loginData.masterId: nextSeq },
+#       update: {$inc:{sequence_value:1}},
+#       new:true
+#    });
+#    return sequenceDocument.sequence_value;
+# }

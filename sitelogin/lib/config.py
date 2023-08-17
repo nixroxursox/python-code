@@ -10,12 +10,12 @@ def Config():
     property cert_reqs
     certfile: Optional[str] = None
     ciphers: str = 'ECDHE+AESGCM'
-    create_sockets() → Sockets
-    create_ssl_context() → Optional[SSLContext]
+    create_sockets() -> Sockets
+    create_ssl_context() -> Optional[SSLContext]
     debug = False
     dogstatsd_tags = ''
     errorlog: Optional[Union[Logger, str]] = '-'
-    classmethod from_mapping(mapping: Optional[Mapping[str, Any]] = None, **kwargs: Any) → Config
+    classmethod from_mapping(mapping: Optional[Mapping[str, Any]] = None, **kwargs: Any) -> Config
     Create a configuration from a mapping.
 
 This allows either a mapping to be directly passed or as keyword arguments, for example,
@@ -24,9 +24,9 @@ config = {'keep_alive_timeout': 10}
 Config.from_mapping(config)
 Config.from_mapping(keep_alive_timeout=10)
 Parameters:
-mapping – Optionally a mapping object.
-kwargs – Optionally a collection of keyword arguments to form a mapping.
-classmethod from_object(instance: Union[object, str]) → Config
+mapping -> Optionally a mapping object.
+kwargs  Optionally a collection of keyword arguments to form a mapping.
+classmethod from_object(instance: Union[object, str]) -> Config
 Create a configuration from a Python object.
 
 This can be used to reference modules or objects within modules for example,
@@ -38,21 +38,21 @@ Config.from_object(instance)
 are valid.
 
 Parameters:
-instance – Either a str referencing a python object or the object itself.
-classmethod from_pyfile(filename: Union[AnyStr, PathLike]) → Config
+instance -> Either a str referencing a python object or the object itself.
+classmethod from_pyfile(filename: Union[AnyStr, PathLike]) -> Config
 Create a configuration from a Python file.
 
 Config.from_pyfile('hypercorn_config.py')
 Parameters:
-filename – The filename which gives the path to the file.
-classmethod from_toml(filename: Union[AnyStr, PathLike]) → Config
+filename -> The filename which gives the path to the file.
+classmethod from_toml(filename: Union[AnyStr, PathLike]) -> Config
 Load the configuration values from a TOML formatted file.
 
 This allows configuration to be loaded as so
 
 Config.from_toml('config.toml')
 Parameters:
-filename – The filename which gives the path to the file.
+filename -> The filename which gives the path to the file.
 graceful_timeout: float = 3.0
 group: Optional[int] = None
 h11_max_incomplete_size = 16384
@@ -75,11 +75,11 @@ max_app_queue_size: int = 10
 pid_path: Optional[str] = None
 property quic_bind: List[str]
 read_timeout: Optional[int] = None
-response_headers(protocol: str) → List[Tuple[bytes, bytes]]
+response_headers(protocol: str) -> List[Tuple[bytes, bytes]]
 property root_path: str
 server_names: List[str] = []
-set_cert_reqs(value: int) → None
-set_statsd_logger_class(statsd_logger: Type[Logger]) → None
+set_cert_reqs(value: int) -> None
+set_statsd_logger_class(statsd_logger: Type[Logger]) -> None
 shutdown_timeout = 60.0
 property ssl_enabled: bool
 ssl_handshake_timeout = 60.0

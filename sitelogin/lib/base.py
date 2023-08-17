@@ -1,11 +1,9 @@
 import asyncio
-from datetime import datetime, timedelta, timezone, time
+from datetime import datetime, time, timedelta, timezone
 from http.cookies import SimpleCookie
+from typing import TYPE_CHECKING, Callable, Optional, Union
 
-
-from typing import Callable, Optional, TYPE_CHECKING, Union
-
-from globals import current_app
+# from globals import current_app
 
 if TYPE_CHECKING:
     from .wrappers import Response  # noqa: F401

@@ -30,9 +30,7 @@ def login_required(func: typing.Callable) -> typing.Callable:
     if asyncio.iscoroutinefunction(func):
 
         @functools.wraps(func)
-        async def async_wrapper(
-            *args: typing.Any, **kwargs: typing.Any
-        ) -> Response:
+        async def async_wrapper(*args: typing.Any, **kwargs: typing.Any) -> Response:
             request = kwargs.get("request", args[idx] if args else None)
             assert isinstance(request, Request)
 
@@ -103,9 +101,7 @@ def fresh_login_required(func: typing.Callable) -> typing.Callable:
     if asyncio.iscoroutinefunction(func):
 
         @functools.wraps(func)
-        async def async_wrapper(
-            *args: typing.Any, **kwargs: typing.Any
-        ) -> Response:
+        async def async_wrapper(*args: typing.Any, **kwargs: typing.Any) -> Response:
             request = kwargs.get("request", args[idx] if args else None)
             assert isinstance(request, Request)
             login_manager = getattr(request.app.state, "login_manager", None)

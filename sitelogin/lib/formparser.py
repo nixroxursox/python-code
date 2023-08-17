@@ -3,6 +3,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from tempfile import SpooledTemporaryFile
 from urllib.parse import unquote_plus
+import wtforms
+from wtforms import form
+from wtforms.form import Form, BaseForm
 
 from starlette.datastructures import FormData, Headers, UploadFile
 
@@ -20,6 +23,9 @@ class FormMessage(Enum):
     FIELD_DATA = 3
     FIELD_END = 4
     END = 5
+
+
+s
 
 
 @dataclass
@@ -274,3 +280,18 @@ class MultiPartParser:
 
         parser.finalize()
         return FormData(self.items)
+
+    class loginForm:
+        def __init__(self, **kwargs):
+            self.loginFields = kwargs.pop("loginFields")
+
+        def fields(self):
+            fields = dict(f)
+            strField = wtforms.SearchField()
+            intField = wtforms.IntegerField()
+            validators = wtforms.validators()
+            f = {
+                strfield("Display Name", validators=[validators.input_required()]),
+                strfield("userId", validators=[validators.input_required()]),
+                intField("Pin Code", validators=[validators.input_required()]),
+            }
