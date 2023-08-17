@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block Title %}Welcome {% endblock title %}
+
+{% include 'nav.html' %}
+
+{% block content %}
+{{ "Hello, %s!" % name }}
+
+{% endblock content %}

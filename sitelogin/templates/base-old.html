@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="Sysadmin">
+
+        <!-- Bootstrap core CSS -->
+        <link href="/style/fa/css/w3.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="./static/jumbotron.css" rel="stylesheet">
+   <title>{% block title %} - The Ring{% endblock title %}</title>
+    {% endblock head %}
+    <meta charset="UTF-8">
+ 
+    <script>
+    </script>
+</head>
+<style>
+    .message {
+        color: white;
+        padding: 4px;
+        margin: 4px;
+    }
+    .message-info {
+        background-color: darkgreen;
+    }
+    .message-error {
+        background-color: darkred;
+    }
+    .message-warning {
+        background-color: #b0b000;
+    }
+
+    .login-label {
+        display: inline-block;
+        width: 200px;
+    }
+    .login-form {
+        width: 440px;
+        margin-left: auto;
+        margin-right: auto
+    }
+    .login-form input {
+        width: 200px
+    }
+    .login-buttons {
+        margin-top: 8px;
+        text-align: center;
+    }
+    .login-buttons button {
+        margin-left: 8px;
+        margin-right: 8px;
+        border: 0;
+        padding: 8px;
+        border-radius: 4px;
+    }
+    .login-buttons button[type=reset] {
+        background-color: #a04040;
+        color: white;
+    }
+    .login-buttons button[type=submit] {
+        background-color: #40a040;
+        color: white;
+    }
+</style>
+<body class="w3-light-grey ">
+    <div id="content" class=w3-top">
+ 
+
+
+<h1>{{ self.title }}</h1>
+
+<div>
+    <a href="{{ request.url_for('home') }}">Home</a>
+</div>
+
+<ul>
+    <li><a href="/">Home Page</a></li>
+    {% if request.user.is_authenticated %}
+    <li><a href="/protected">Protected Page</a></li>
+    {% if request.user.is_admin %}
+    <li><a href="/admin">Admin Page</a></li>
+    {% endif %}
+    <li><a href="/logout">Logout Page</a></li>
+    {% else %}
+    <li><a href="/login">Login Page</a></li>
+    {% endif %}
+  </ul>
+  <br/>
+
+<div id="messages">
+{% if 'messages' in request.session %}
+    {% for msg in request.session.pop('messages') %}
+        <div class="message message-{{ msg.severity }}">{{ msg.message }}</div>
+    {% endfor %}
+{% endif %}
+</div>
+
+
+
+<!-- this is nice for debugging -->
+<footer>
+    <div>User: {{ request.session['user'] }}<br>
+        Name: {{ request.user.identity }}<br>
+        </div>
+    <div id="footer" class="w3-bottom w3-align-right">
+        {% block footer %}
+        &copy; Copyright 2022 by <a href="http://localhost:5555/">you</a>.
+        {% endblock %}
+    </div>
+    <div>
+        complete url: <span id="loc"></span>
+        <script>document.getElementById('loc').innerHTML = window.location.href</script>
+    </div>
+</footer>
+
+</body>
+</html>
+</html>

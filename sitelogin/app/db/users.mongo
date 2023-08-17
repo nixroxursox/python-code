@@ -1,0 +1,80 @@
+{
+  "_id": "theRing.dbReader",
+  "userId": {
+    "$binary": {
+      "base64": "TjCa9krYSfyuBFHU5QT46w==",
+      "subType": "04"
+    }
+  },
+  "user": "dbReader",
+  "db": "theRing",
+  "credentials": {
+    "SCRAM-SHA-1": {
+      "iterationCount": 10000,
+      "salt": "KGj7tSWnGtxopHbqC3j2UQ==",
+      "storedKey": "JRjOFVvX7JHlYO607vm8yH5REHs=",
+      "serverKey": "VGCP3K/+eHcr2fue5m/Z6Mp2Ttg="
+    },
+    "SCRAM-SHA-256": {
+      "iterationCount": 15000,
+      "salt": "r5MsrEGpMGpV9/3syRIj6LHqUTTkdEi4hpemmg==",
+      "storedKey": "hJd/pkaQN15foRulqkghXsd+6h7Ei8FuWRM2CoxQbmI=",
+      "serverKey": "xczWbSR4VcDZm/7l0mhs235BiZ9yUi3cc9oBzeUfW0I="
+    }
+  },
+  "roles": [
+    {
+      "role": "read",
+      "db": "theRing"
+    }
+  ]
+}
+
+db.createUser(
+{
+	user: "dbReader",
+
+	pwd: passwordPrompt(),
+
+	roles:[
+	{
+		role: "read" , db:"theRing"},
+    {
+		role: "read" , db:"theRing"}
+	}
+		  ]
+})
+
+db.createUser({
+user: "dbReader",
+pwd: passwordPrompt(),
+roles:  [
+  { role: "read", db: "theRing"}
+]
+})
+db.createUser({
+user: "dbWriter",
+pwd: passwordPrompt(),
+roles:  [
+  { role: "write", db: "theRing"}
+]
+})
+db.createUser({
+user: "root",
+pwd: passwordPrompt(),
+roles:  [
+  { role: "dbOwner", db: "theRing"}
+]
+})
+
+db.createUser(
+{
+	user: "dbWriter",
+
+	pwd: passwordPrompt(),
+
+	roles:[
+	{
+		role: "read/write" , db:"theRing"}
+		  ]
+})

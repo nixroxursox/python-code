@@ -1,0 +1,16 @@
+{
+  "_id": {
+    "$oid": "64c061b08814bfc4cf3b9067"
+  },
+  "loginData": {
+    "userId": "blah",
+    "password": "changeMe",
+    "pinCode": "02020202",
+    "nickName": "therealnixrox",
+    "isAdmin": false,
+    "masterId": "db.counters.getNextSequence(masterId)",
+    "memberSince": {
+      "$date": "2023-07-25T23:19:24.673Z"
+    }
+  }
+}

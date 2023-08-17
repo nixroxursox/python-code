@@ -1,0 +1,40 @@
+<html>
+    {% extends "base.html" %}
+    <body>
+    <h1>Create Account</h1>
+    <form method="post" action="{{ url_for('register') }}" novalidate>
+      {{ form.csrf_token }}
+      <div>
+        {{ form.username(placeholder='Username',
+                      autofocus='true',
+                      type='text',
+                      spellcheck='false') }}
+        {% if form.username.errors -%}
+        <span>{{ form.username.errors[0] }}</span>
+        {%- endif %}
+      </div>
+      <div>
+        {{ form.nickName(placeholder='Display Name',
+                      autofocus='true',
+                      type='text',
+                      spellcheck='false') }}
+        {% if form.nickName.errors -%}
+        <span>{{ form.nickName.errors[0] }}</span>
+        {%- endif %}
+      </div>
+      <div>
+        {{ form.password(placeholder="Password") }}
+        {% if form.password.errors -%}
+        <span>{{ form.password.errors[0] }}</span>
+        {%- endif %}
+      </div>
+      <div>
+        {{ form.pinCode(placeholder="Create PIN Code") }}
+        {% if form.pinCode.errors -%}
+        <span>{{ form.pinCode.errors[0] }}</span>
+        {%- endif %}
+      </div>
+      <button type="submit">register</button>
+    </form>
+  </body>
+</html>

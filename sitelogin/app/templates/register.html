@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% macro input_field(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" name="{{ name }}" value="{{
+        value}}" size="{{ size }}">
+{%- endmacro %}
+
+{% block title %}Register{% endblock %}
+{% block head %}
+    {{ super() }}
+
+{% endblock %}
+
+{% block content %}
+<div>
+{% include 'nav.html' %}
+</div>
+<div class="w3-container">
+
+</div>
+<div class="w3-row w3-container w3-padding-large">
+
+  <div class="w3-col s4 w3-center">
+<p> </p>
+  </div>
+  <div class="w3-col s4 w3-dark-grey w3-center w3-padding-small">
+      <form action="http://localhost:5000/auth/register" method="post" id="freg" name="register" enctype="text/html; charset=UTF-8"
+      <input type="hidden" name="regform" value="register">
+    {% include 'form.html' %}
+
+    <dt class="w3-padding-small">password</dt>
+    <dd>{{ input_field('password', type='password') }}</dd>
+    <dt class="w3-padding-small">pin</dt>
+    <dd>{{ input_field('pinCode', type='password') }}</dd>
+   </dl>
+    </form>
+  </div>
+  <div class="w3-col s4 w3-center">
+   <p> </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+x
+
+function insertDocument(doc, userLogins) {
+
+    while (1) {
+
+        var cursor = userLogins.find( {}, { reg_data.masterId: 1 } ).sort( { reg_data.masterId: -1 } ).limit(1);
+
+        var seq = cursor.hasNext() ? cursor.next()._id + 1 : 1;
+
+        doc.reg_data.masterId = seq;
+
+        userLogins.insert(doc);
+
+        var err = db.getLastErrorObj();
+
+        if( err && err.code ) {
+            if( err.code == 11000 /* dup key */ )
+                continue;
+            else
+                print( "unexpected error inserting data: " + tojson( err ) );
+        }
+
+        break;
+    }
+}
