@@ -12,7 +12,7 @@ RUN groupadd --system --gid $USER_GID $USERNAME \
     && apt-get update \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoera.d/$USERNAME \
     && savedAptMark="$savedAptMark sudo"
 
 RUN set -eux; \
@@ -26,7 +26,7 @@ RUN set -eux; \
     git \
     python3.11-venv \
     libsodium-dev \
-    python3-full \
+    python3 \
     python3-pymongo
 
 USER $USERNAME
