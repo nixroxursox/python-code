@@ -1,0 +1,61 @@
+
+
+
+# Documentation
+# Optionals
+# Packaging
+# Testing
+-e .[full]
+Starlette-Context
+Starlette-Login
+aiomcache
+asgi-sessions
+authlib
+black==23.3.0
+build==0.10.0
+configparser
+coverage==7.2.7
+datetime
+decorouter
+extensions
+flask-mongo-sessions
+httptools
+httpx
+importlib-metadata==6.6.0
+itsdangerous
+jinja2
+mkautodoc==0.2.0
+mkdocs-material==9.1.17
+mkdocs==1.4.3
+mypy==1.4.1
+pydantic
+pyjwt
+pymemcache
+pymongo
+pynacl
+pytest==7.4.0
+python-decouple
+pyyaml
+requests
+ruff==0.0.275
+starception
+starlette
+starlette-apps
+starlette-bridge
+starlette-context
+starlette-cramjam
+starlette-csrf
+starlette-session
+starlette-wtf
+starlette-wtf
+starsessions
+trio==0.22.1
+twine==4.0.2
+types-PyYAML==6.0.12.10
+types-contextvars==2.4.7.2
+types-dataclasses==0.6.6
+typing_extensions==4.7.0
+urllib3
+uvicorn
+uvloop
+webargs-starlette
